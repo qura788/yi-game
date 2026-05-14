@@ -87,6 +87,16 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
 .dialogue-card .speaker{color:#f0d060;font-weight:bold;margin-bottom:8px;font-size:15px}
 .particle{position:absolute;width:4px;height:4px;background:var(--gold); border-radius:50%;pointer-events:none; animation:float-up 3s ease-out forwards;}
 @keyframes float-up{0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-200px) scale(0)}}
+/* 火星粒子 */
+.particle-fire{position:absolute;width:5px;height:5px;border-radius:50%;pointer-events:none; animation:fire-rise 2.5s ease-out forwards; box-shadow:0 0 8px 3px rgba(255,100,0,.5);}
+@keyframes fire-rise{0%{opacity:1;transform:translateY(0) translateX(0) scale(1)} 50%{opacity:.7;transform:translateY(-100px) translateX(20px) scale(.5)} 100%{opacity:0;transform:translateY(-240px) translateX(-20px) scale(0)}}
+/* 彩色纸屑 */
+.particle-confetti{position:absolute;pointer-events:none; animation:confetti-fall 3s ease-in forwards;}
+@keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(350px) rotate(720deg)}}
+/* 星光 */
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0deg)} 50%{opacity:1;transform:scale(1) rotate(180deg)}}
+.particle-sparkle{position:absolute;pointer-events:none; animation:sparkle 1.8s ease-in-out infinite;}
+.particle-sparkle::before{content:'✦';display:block;font-size:12px;color:#f0d060;text-shadow:0 0 6px rgba(240,208,96,.8);}
 </style>
 </head>
 <body>
@@ -310,6 +320,7 @@ const Game = {
     Game.achievements.lacquerware = true; Game.achievements.torch = true; Game.achievements.feast = true;
     this.show('endingScene');
     EndingPage.spawnParticles();
+    setTimeout(() => sparkleCard('endingCard'), 200);
   },
   backToMenu() { this.show('mainMenu'); }
 };
@@ -1130,6 +1141,7 @@ const Level2 = {
       document.getElementById("l2Game").style.display = "none";
       document.getElementById("l2Knowledge").style.display = "";
       document.getElementById("l2Complete").style.display = "none";
+      sparkleCard("l2Knowledge");
     } else {
       document.getElementById("l2CompleteTitle").textContent = "比赛结束";
       document.getElementById("l2CompleteText").textContent = ["点燃了 "+this.torchesLit+"/"+this.torchTarget+" 个火把","跑了 "+Math.floor(this.distance)+"m","❤️ 剩余生命："+this.lives].join("\n");
@@ -1332,6 +1344,7 @@ const Level3 = {
       document.getElementById("l3Game").style.display = "none";
       document.getElementById("l3Knowledge").style.display = "";
       document.getElementById("l3Complete").style.display = "none";
+      sparkleCard("l3Knowledge");
     }
   },
 
@@ -1370,15 +1383,61 @@ const EndingPage = {
   },
   spawnParticles() {
     const app = document.getElementById('app');
+    const colors = ['#c8322a','#d4a853','#f0d060','#e87040','#ff9966'];
+    // 金色光点
     setInterval(() => {
       const p = document.createElement('div'); p.className = 'particle';
       p.style.left = (20 + Math.random()*80) + '%'; p.style.top = (40 + Math.random()*50) + '%';
       p.style.animationDuration = (2 + Math.random()*3) + 's';
-      app.appendChild(p);
-      setTimeout(() => p.remove(), 3000);
-    }, 400);
+      app.appendChild(p); setTimeout(() => p.remove(), 3000);
+    }, 500);
+    // 火星
+    setInterval(() => {
+      const f = document.createElement('div'); f.className = 'particle-fire';
+      f.style.left = (10 + Math.random()*90) + '%'; f.style.bottom = (5 + Math.random()*30) + '%';
+      f.style.background = colors[Math.floor(Math.random()*colors.length)];
+      f.style.animationDuration = (2 + Math.random()*3) + 's';
+      app.appendChild(f); setTimeout(() => f.remove(), 3000);
+    }, 600);
+    // 彩色纸屑
+    setInterval(() => {
+      const c = document.createElement('div'); c.className = 'particle-confetti';
+      c.style.left = (5 + Math.random()*95) + '%'; c.style.top = '-10px';
+      c.style.width = (6 + Math.random()*10) + 'px';
+      c.style.height = (4 + Math.random()*8) + 'px';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (2.5 + Math.random()*3) + 's';
+      c.style.animationDelay = Math.random() + 's';
+      app.appendChild(c); setTimeout(() => c.remove(), 4000);
+    }, 800);
   },
 };
+
+// 知识卡片周围星光效果
+function sparkleCard(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  const parent = card.parentElement;
+  const appRect = document.getElementById('app').getBoundingClientRect();
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const s = document.createElement('div'); s.className = 'particle-sparkle';
+      const side = Math.random();
+      let l, t;
+      if (side < 0.25) { l = rect.left - appRect.left - 5; t = rect.top - appRect.top + Math.random() * rect.height; }
+      else if (side < 0.5) { l = rect.left - appRect.left + rect.width + 5; t = rect.top - appRect.top + Math.random() * rect.height; }
+      else if (side < 0.75) { l = rect.left - appRect.left + Math.random() * rect.width; t = rect.top - appRect.top - 5; }
+      else { l = rect.left - appRect.left + Math.random() * rect.width; t = rect.top - appRect.top + rect.height + 5; }
+      s.style.left = l + 'px'; s.style.top = t + 'px';
+      s.style.animationDuration = (1.2 + Math.random() * 2) + 's';
+      s.style.animationDelay = Math.random() * 0.8 + 's';
+      parent.appendChild(s);
+      setTimeout(() => s.remove(), 2500);
+    }, i * 40);
+  }
+}
+
 document.getElementById('endingScene').addEventListener('click', () => {
   if (EndingPage.current < EndingPage.pages.length - 1) {
     EndingPage.current++; EndingPage.show();
