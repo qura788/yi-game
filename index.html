@@ -515,7 +515,7 @@ const L1Coloring = {
     // 黑色外圈（用8段弧拼成环形，点击任一段即可填满）
     for (let i = 0; i < 8; i++) {
       const a = (i / 8) * Math.PI * 2;
-      this.zones.push({id:'black_'+i, cx:cx+Math.cos(a)*97, cy:cy+Math.sin(a)*97, r:22, correct:'black', filled:false});
+      this.zones.push({id:'black_'+i, cx:cx+Math.cos(a)*107, cy:cy+Math.sin(a)*97, r:22, correct:'black', filled:false});
     }
     this.blackGroup = this.zones.filter(z => z.correct==='black').map(z => z.id);
     // 8瓣红色火焰（每瓣一个圆，清晰分离）
@@ -596,7 +596,7 @@ const L1Coloring = {
       self.ctx.fillStyle = cmap[color];
       if (color === 'black') {
         // 画黑色外圈环
-        self.ctx.beginPath(); self.ctx.arc(cx, cy, 105, 0, Math.PI*2); self.ctx.arc(cx, cy, 80, 0, Math.PI*2, true); self.ctx.fill();
+        self.ctx.beginPath(); self.ctx.arc(cx, cy, 115, 0, Math.PI*2); self.ctx.arc(cx, cy, 95, 0, Math.PI*2, true); self.ctx.fill();
       } else {
         self.ctx.beginPath(); self.ctx.arc(hit.cx, hit.cy, hit.r-2, 0, Math.PI*2); self.ctx.fill();
       }
@@ -630,18 +630,18 @@ const L1Coloring = {
     // 画黑色外圈提示
     const blackDone = this.blackGroup && this.blackGroup.every(zid => this.zones.find(z=>z.id===zid).filled);
     if (!blackDone) {
-      ctx.strokeStyle = 'rgba(200,200,200,.7)'; ctx.lineWidth = 3; ctx.setLineDash([8,4]);
-      ctx.beginPath(); ctx.arc(cx, cy, 105, 0, Math.PI*2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx, cy, 80, 0, Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 3; ctx.setLineDash([8,4]);
+      ctx.beginPath(); ctx.arc(cx, cy, 115, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 95, 0, Math.PI*2); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(200,200,200,.1)';
-      ctx.beginPath(); ctx.arc(cx, cy, 105, 0, Math.PI*2); ctx.arc(cx, cy, 80, 0, Math.PI*2, true); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.15)';
+      ctx.beginPath(); ctx.arc(cx, cy, 115, 0, Math.PI*2); ctx.arc(cx, cy, 95, 0, Math.PI*2, true); ctx.fill();
     }
 
     // 画红色花瓣提示
     const redZones = this.zones.filter(z => z.correct==='red' && !z.filled);
     if (redZones.length > 0) {
-      ctx.fillStyle = 'rgba(255,80,60,.15)'; ctx.strokeStyle = 'rgba(255,80,60,.7)'; ctx.lineWidth = 2.5; ctx.setLineDash([5,3]);
+      ctx.fillStyle = 'rgba(255,60,40,.22)'; ctx.strokeStyle = 'rgba(255,60,40,.9)'; ctx.lineWidth = 3; ctx.setLineDash([5,3]);
       for (const z of redZones) {
         ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+4, 0, Math.PI*2); ctx.fill();
         ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+4, 0, Math.PI*2); ctx.stroke();
@@ -652,7 +652,7 @@ const L1Coloring = {
     // 画黄色中心提示
     const centerZ = this.zones.find(z => z.id==='center');
     if (centerZ && !centerZ.filled) {
-      ctx.fillStyle = 'rgba(255,220,80,.15)'; ctx.strokeStyle = 'rgba(255,220,80,.7)'; ctx.lineWidth = 2.5; ctx.setLineDash([5,3]);
+      ctx.fillStyle = 'rgba(255,200,40,.22)'; ctx.strokeStyle = 'rgba(255,200,40,.9)'; ctx.lineWidth = 3; ctx.setLineDash([5,3]);
       ctx.beginPath(); ctx.arc(centerZ.cx, centerZ.cy, centerZ.r+4, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(centerZ.cx, centerZ.cy, centerZ.r+4, 0, Math.PI*2); ctx.stroke();
       ctx.setLineDash([]);
@@ -663,7 +663,7 @@ const L1Coloring = {
     // 黑色外圈
     if (blackDone) {
       ctx.fillStyle = cmap.black;
-      ctx.beginPath(); ctx.arc(cx, cy, 105, 0, Math.PI*2); ctx.arc(cx, cy, 80, 0, Math.PI*2, true); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 115, 0, Math.PI*2); ctx.arc(cx, cy, 95, 0, Math.PI*2, true); ctx.fill();
     }
     // 红色花瓣（已填的）
     for (const z of this.zones) {
