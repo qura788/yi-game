@@ -509,20 +509,27 @@ const L1Coloring = {
     this.canvas = document.getElementById('l1ColoringCanvas');
     this.ctx = this.canvas.getContext('2d');
     const cx = 170, cy = 170;
+
+    // 上色区域：黑外圈 → 红花瓣 → 黄中心
     this.zones = [];
-    this.zones.push({id:"center", cx, cy, r:38, correct:"yellow", filled:false});
+    // 黑色外圈（用8段弧拼成环形，点击任一段即可填满）
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      this.zones.push({id:'black_'+i, cx:cx+Math.cos(a)*97, cy:cy+Math.sin(a)*97, r:22, correct:'black', filled:false});
+    }
+    this.blackGroup = this.zones.filter(z => z.correct==='black').map(z => z.id);
+    // 8瓣红色火焰（每瓣一个圆，清晰分离）
     for (let p = 0; p < 8; p++) {
       const a = (p / 8) * Math.PI * 2 - Math.PI / 2;
       const dx = Math.cos(a), dy = Math.sin(a);
-      this.zones.push({id:"p"+p+"_0", cx:cx+dx*38, cy:cy+dy*38, r:22, correct:"red", filled:false});
-      this.zones.push({id:"p"+p+"_1", cx:cx+dx*60, cy:cy+dy*60, r:20, correct:"red", filled:false});
-      this.zones.push({id:"p"+p+"_2", cx:cx+dx*78, cy:cy+dy*78, r:15, correct:"red", filled:false});
+      this.zones.push({id:'petal_'+p, cx:cx+dx*68, cy:cy+dy*68, r:26, correct:'red', filled:false});
     }
-    this.petalGroups = [];
-    for (let p = 0; p < 8; p++) {
-      this.petalGroups.push(["p"+p+"_0", "p"+p+"_1", "p"+p+"_2"]);
-    }
-    this.blackZoneHit = 0;
+    // 黄色中心
+    this.zones.push({id:'center', cx, cy, r:44, correct:'yellow', filled:false});
+
+    this.paintOrder = ['black','red','yellow'];
+    this.orderHints = {black:'请先用黑色填涂外圈（黑为底）', red:'请用红色填涂火焰花瓣（红为艳）', yellow:'请用黄色填涂太阳中心（黄为亮）'};
+
     // 加载漆器底图
     if (ART.woodBaseImg) {
       this.woodImg = new Image();
@@ -530,50 +537,85 @@ const L1Coloring = {
       this.woodImg.src = ART.woodBaseImg;
     }
     this.drawAll();
+
+    const self = this;
     this.canvas.onpointerup = (e) => {
-      const r = this.canvas.getBoundingClientRect(), s = 340 / r.width;
+      const r = self.canvas.getBoundingClientRect(), s = 340 / r.width;
       const mx = (e.clientX - r.left) * s, my = (e.clientY - r.top) * s;
       if (!Level1.selectedColor) { document.getElementById('l1ColorHint').textContent = '请先选择一个颜色！'; return; }
-      let hit = null;
-      for (const z of this.zones) {
-        if (z.filled) continue;
-        if (Math.hypot(mx-z.cx, my-z.cy) <= z.r + 8) { hit = z; break; }
-      }
-      if (!hit) { this.blackZoneHit++; if (this.blackZoneHit <= 3) { const elder = document.getElementById("l1ElderBubble"); elder.style.display = ""; elder.textContent = "长老：黑为底，这里不能上色哦"; setTimeout(() => elder.style.display = "none", 1500); } return; }
-      if (Level1.selectedColor !== hit.correct) {
+
+      // 检查是否按顺序上色
+      const color = Level1.selectedColor;
+      const filledColors = new Set();
+      const allZones = self.zones;
+      // 收集已完成上色的颜色
+      const blackDone = self.blackGroup.every(zid => allZones.find(z=>z.id===zid).filled);
+      const redDone = allZones.filter(z => z.correct==='red').every(z => z.filled);
+      if (blackDone) filledColors.add('black');
+      if (redDone) filledColors.add('red');
+
+      // 检查顺序
+      if (color === 'red' && !filledColors.has('black')) {
         const elder = document.getElementById('l1ElderBubble');
-        elder.style.display = ''; elder.textContent = hit.correct==='red'?'长老：火焰要用红色才够热烈哦':'长老：太阳中心要用黄色才够明亮哦';
+        elder.style.display = ''; elder.textContent = '长老：彝族漆器讲究黑为底，请先用黑色填涂外圈';
         setTimeout(() => elder.style.display = 'none', 2000);
         return;
       }
+      if (color === 'yellow' && (!filledColors.has('black') || !filledColors.has('red'))) {
+        const elder = document.getElementById('l1ElderBubble');
+        elder.style.display = ''; elder.textContent = '长老：先把黑底和红花填好，最后再来点太阳中心';
+        setTimeout(() => elder.style.display = 'none', 2000);
+        return;
+      }
+
+      let hit = null;
+      for (const z of self.zones) {
+        if (z.filled) continue;
+        if (z.correct !== color) continue;
+        if (Math.hypot(mx-z.cx, my-z.cy) <= z.r + 8) { hit = z; break; }
+      }
+
+      if (!hit) {
+        const elder = document.getElementById('l1ElderBubble');
+        elder.style.display = ''; elder.textContent = color==='black'?'长老：外圈在这里，沿着圆边填涂黑色':'长老：此处无需上色，换个位置试试';
+        setTimeout(() => elder.style.display = 'none', 1500);
+        return;
+      }
+
+      // 填色
       hit.filled = true;
-      // 同一瓣的所有子区域一起标记
-      for (const grp of this.petalGroups) {
-        if (grp.includes(hit.id)) {
-          for (const zid of grp) {
-            const z = this.zones.find(z=>z.id===zid);
-            if (z && !z.filled) z.filled = true;
-          }
-          break;
+      // 黑色外圈：点一处全填
+      if (color === 'black') {
+        for (const zid of self.blackGroup) {
+          const z = allZones.find(z=>z.id===zid);
+          if (z && !z.filled) z.filled = true;
         }
       }
+
       const cmap = {red:'#c8322a', yellow:'#d4a853', black:'#1a1a1a'};
-      this.ctx.fillStyle = cmap[Level1.selectedColor];
-      this.ctx.beginPath(); this.ctx.arc(hit.cx, hit.cy, hit.r-2, 0, Math.PI*2); this.ctx.fill();
-      document.getElementById('l1ColorHint').textContent = '已选：' + (Level1.selectedColor==='red'?'红色':'黄色');
-      const petalDone = this.petalGroups.filter(g => g.every(zid => this.zones.find(z=>z.id===zid).filled)).length;
-      const centerDone = this.zones.find(z=>z.id==="center").filled;
-      const allDone = centerDone && petalDone >= 8;
-      if (allDone) {
-        // 替换为成品图
+      self.ctx.fillStyle = cmap[color];
+      if (color === 'black') {
+        // 画黑色外圈环
+        self.ctx.beginPath(); self.ctx.arc(cx, cy, 105, 0, Math.PI*2); self.ctx.arc(cx, cy, 80, 0, Math.PI*2, true); self.ctx.fill();
+      } else {
+        self.ctx.beginPath(); self.ctx.arc(hit.cx, hit.cy, hit.r-2, 0, Math.PI*2); self.ctx.fill();
+      }
+      document.getElementById('l1ColorHint').textContent = '已选：' + (color==='black'?'黑底':color==='red'?'红色':'黄色');
+
+      // 检查完成
+      const bDone = self.blackGroup.every(zid => allZones.find(z=>z.id===zid).filled);
+      const rDone = allZones.filter(z => z.correct==='red').every(z => z.filled);
+      const cDone = allZones.find(z => z.id==='center').filled;
+      if (bDone && rDone && cDone) {
         if (ART.lacquerwareDoneImg) {
           const doneImg = new Image();
-          doneImg.onload = () => { this.ctx.clearRect(0,0,340,340); this.ctx.drawImage(doneImg, 0, 0, 340, 340); };
+          doneImg.onload = () => { self.ctx.clearRect(0,0,340,340); self.ctx.drawImage(doneImg, 0, 0, 340, 340); };
           doneImg.src = ART.lacquerwareDoneImg;
         }
-        const score = centerDone ? Math.round(50 + (petalDone / 8) * 50) : Math.round((petalDone / 8) * 50);
-        setTimeout(() => Level1.finishColoring(score), 2500);
+        setTimeout(() => Level1.finishColoring(100), 2500);
       }
+
+      self.drawAll();
     };
   },
   drawAll() {
@@ -583,23 +625,40 @@ const L1Coloring = {
     } else {
       ctx.fillStyle = '#1a1a1a'; ctx.fillRect(20,20,300,300);
     }
-    // 显示可上色区域（明显闪烁提示圈）
-    ctx.save();
-    for (const z of this.zones) {
-      if (z.filled) continue;
-      // 外圈虚线描边
-      ctx.strokeStyle = z.correct==='yellow'?'rgba(255,220,80,.8)':'rgba(255,80,60,.8)';
-      ctx.lineWidth = 3; ctx.setLineDash([5,3]);
-      ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+6, 0, Math.PI*2); ctx.stroke();
+    const cx = 170, cy = 170;
+
+    // 画黑色外圈提示
+    const blackDone = this.blackGroup && this.blackGroup.every(zid => this.zones.find(z=>z.id===zid).filled);
+    if (!blackDone) {
+      ctx.strokeStyle = 'rgba(200,200,200,.7)'; ctx.lineWidth = 3; ctx.setLineDash([8,4]);
+      ctx.beginPath(); ctx.arc(cx, cy, 105, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 80, 0, Math.PI*2); ctx.stroke();
       ctx.setLineDash([]);
-      // 半透明填充
-      ctx.fillStyle = z.correct==='yellow'?'rgba(255,220,80,.18)':'rgba(255,80,60,.18)';
-      ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+4, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'rgba(200,200,200,.1)';
+      ctx.beginPath(); ctx.arc(cx, cy, 105, 0, Math.PI*2); ctx.arc(cx, cy, 80, 0, Math.PI*2, true); ctx.fill();
     }
-    ctx.restore();
+
+    // 画红色花瓣提示
+    const redZones = this.zones.filter(z => z.correct==='red' && !z.filled);
+    if (redZones.length > 0) {
+      ctx.fillStyle = 'rgba(255,80,60,.15)'; ctx.strokeStyle = 'rgba(255,80,60,.7)'; ctx.lineWidth = 2.5; ctx.setLineDash([5,3]);
+      for (const z of redZones) {
+        ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+4, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+4, 0, Math.PI*2); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+
+    // 画黄色中心提示
+    const centerZ = this.zones.find(z => z.id==='center');
+    if (centerZ && !centerZ.filled) {
+      ctx.fillStyle = 'rgba(255,220,80,.15)'; ctx.strokeStyle = 'rgba(255,220,80,.7)'; ctx.lineWidth = 2.5; ctx.setLineDash([5,3]);
+      ctx.beginPath(); ctx.arc(centerZ.cx, centerZ.cy, centerZ.r+4, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(centerZ.cx, centerZ.cy, centerZ.r+4, 0, Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+    }
   },
 };
-
 // ==================== 关卡2：火把节跑酷 ====================
 const Level2 = {
   state: 'pregame', canvas: null, ctx: null,
