@@ -278,7 +278,7 @@ const Game = {
     this.show('endingScene');
     EndingPage.spawnParticles();
   },
-  backToMenu() { Audio.playMainMenuMusic(); this.show('mainMenu'); }
+  backToMenu() { this.show('mainMenu'); }
 };
 
 // ==================== 开场画卷 ====================
@@ -796,7 +796,7 @@ const Level2 = {
     this.nightProgress = Math.min(1, this.distance / this.totalDist);
     this.updateHUD();
     this.render();
-    if (this.torchesLit >= this.torchTarget) { Audio.playVictoryMusic(); this.finish(); return; }
+    if (this.torchesLit >= this.torchTarget) { this.finish(); return; }
     this.animId = requestAnimationFrame((t) => this.loop(t));
   },
 
@@ -817,7 +817,7 @@ const Level2 = {
       gameOver() {
     this.state = 'over'; cancelAnimationFrame(this.animId);
     document.getElementById('l2PauseBtn').style.display = 'none';
-    document.getElementById('l2CompleteTitle').textContent = '💔 你倒下了……'; Audio.playHit(); setTimeout(() => Audio.playMainMenuMusic(), 2000);
+    document.getElementById('l2CompleteTitle').textContent = '💔 你倒下了……'; Audio.playHit();
     document.getElementById('l2CompleteText').textContent =
       '点燃了 ' + this.torchesLit + '/' + this.torchTarget + ' 个火把\n跑了 ' + Math.floor(this.distance) + 'm\n\n村民将你扶起，递来一碗泡水酒——\n"休息一下，再来一次吧，年轻人。"';
     if (this.torchesLit >= this.torchTarget) Game.achievements.torch = true;
@@ -1009,7 +1009,6 @@ const Level3 = {
 
   init() {
     this.fed = {};
-    Audio.playLevel3Music();
     document.getElementById('l3Complete').style.display = 'none';
     document.getElementById('l3Dialogue').style.display = 'none';
     const table = document.getElementById('l3Table');
@@ -1353,7 +1352,7 @@ const Audio = {
 document.addEventListener('click', () => { Audio.init(); if (!Audio._started) { Audio._started = true; } }, { once: true });
 
 // ==================== 启动 ====================
-document.getElementById('mainMenu').classList.add('active'); Audio.playMainMenuMusic();
+document.getElementById('mainMenu').classList.add('active');
 console.log('🔥 传承彝族传统文化 — 唤醒阿诗玛的祝福 — 准备就绪');
 </script>
 </body>
