@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>传承彝族传统文化 — 唤醒阿诗玛的祝福</title>
+<style>
+:root {--gold: #d4a853; --red: #c8322a; --warm: #f5e6c8; --dark: #1a1410; --panel: #2a1f15; --text: #e8dcc8;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto Serif SC","Songti SC",serif; display:flex;justify-content:center;align-items:center; min-height:100vh;min-height:100dvh; user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
+#app{width:100%; height:100vh; height:100dvh; position:relative;overflow:hidden; background:linear-gradient(180deg, #1a1410 0%, #2a1a10 50%, #1a1410 100%);}
+@media (min-width: 640px) {#app{max-width:540px;max-height:96vh;max-height:96dvh;border-radius:16px;box-shadow:0 0 60px rgba(212,168,83,.15)}}
+@media (min-width: 1024px) {#app{max-width:780px;max-height:90vh;max-height:90dvh}}
+.scene{position:absolute;top:0;left:0;width:100%;height:100%; display:none;flex-direction:column;align-items:center;justify-content:center; padding:16px;transition:opacity .4s;}
+@media (min-width: 640px) {.scene{padding:24px}}
+@media (min-width: 1024px) {.scene{padding:32px}}
+.scene.active{display:flex;opacity:1}
+.scene.fadeout{opacity:0}
+#mainMenu{background:linear-gradient(180deg, #1a1410 0%, #2a1f15 40%, #1a1410 100%)}
+#mainMenu .title{font-size:34px;font-weight:bold;color:#f0d8a0;text-align:center;line-height:1.6;text-shadow:0 0 8px rgba(0,0,0,.8),0 0 18px rgba(0,0,0,.5)}
+#mainMenu .subtitle{font-size:16px;color:#c8b080;margin-top:8px;text-align:center;text-shadow:0 0 8px rgba(0,0,0,.8);letter-spacing:2px}
+#mainMenu .decoration{font-size:48px;margin:20px 0;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.btn{background:linear-gradient(135deg, #8B6914, #6B4F10); color:#f0d8a0;border:none;padding:14px 48px;border-radius:50px; font-size:18px;font-weight:bold;cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,.5); transition:transform .15s,box-shadow .15s;font-family:inherit;}
+.btn:active{transform:scale(.95);box-shadow:0 2px 10px rgba(200,50,42,.3)}
+.btn.gold{background:linear-gradient(135deg, #d4a853, #b8860b);box-shadow:0 4px 20px rgba(212,168,83,.4)}
+.scroll-card{background:linear-gradient(135deg, #2a1f15, #1f1810); border:2px solid #5a4030;border-radius:16px; padding:32px 24px;width:100%;max-width:400px; box-shadow:0 8px 40px rgba(0,0,0,.5);}
+.scroll-card h2{color:var(--gold);font-size:22px;text-align:center;margin-bottom:16px}
+.scroll-card p{font-size:15px;line-height:2;color:#c8b898;text-align:center;white-space:pre-line}
+.scroll-card .hint{margin-top:20px;text-align:center;color:#8a7060;font-size:13px;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
+.achievement-row{display:flex;align-items:center;gap:8px;margin:4px 0;color:#d4a853;font-size:15px}
+.achievement-row.locked{color:#6a5a4a}
+.bg-main-menu{background-image:none}
+.bg-intro{background-image:none}
+.bg-ending{background-image:none}
+.bg-l1-table{background-image:none}
+.back-btn{position:absolute;top:8px;left:8px;z-index:100; background:rgba(0,0,0,.5);color:#d4a853;border:1px solid rgba(212,168,83,.3); padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer; font-family:inherit;transition:background .2s;}
+.back-btn:hover{background:rgba(0,0,0,.7)}
+#l1Canvas{border:2px solid #5a4030;border-radius:8px;background:#1a1410;touch-action:none;cursor:crosshair;max-width:100%;width:340px;height:340px}
+#l1ColoringCanvas{border:2px solid #5a4030;border-radius:8px;background:#1a1410;touch-action:none;cursor:crosshair;max-width:100%;width:340px;height:340px}
+.color-btn{width:44px;height:44px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:transform .15s}
+.color-btn:active,.color-btn.selected{transform:scale(1.2);border-color:#fff}
+.color-btn.black{background:#1a1a1a}
+.color-btn.red{background:#c8322a}
+.color-btn.yellow{background:#d4a853}
+.elder-bubble{background:#2a1f15;border:1px solid #d4a853;border-radius:12px; padding:10px 16px;font-size:13px;color:#d4a853;text-align:center; max-width:300px;display:none;}
+#l2Canvas{touch-action:none;width:100%;height:auto;aspect-ratio:46/34}
+#level2{padding:8px 0 !important}
+.stat-row{display:flex;gap:20px;font-size:14px;color:#d4a853;margin-top:8px}
+.stat-row span{background:#1a1410;padding:4px 12px;border-radius:12px}
+.food-item{background:linear-gradient(135deg, #3a2a18, #2a1a10); border:2px solid #b8860b;border-radius:14px; padding:10px 14px;font-size:14px;color:#f0d8a0;cursor:grab; position:absolute;transition:all .2s;touch-action:none; box-shadow:0 2px 10px rgba(0,0,0,.4); display:flex;flex-direction:column;align-items:center;gap:3px;}
+.food-item:hover{border-color:#d4a853;box-shadow:0 4px 16px rgba(212,168,83,.3)}
+.food-item:active{cursor:grabbing;box-shadow:0 0 22px rgba(212,168,83,.6);transform:scale(1.06)}
+.food-item.matched{opacity:.3;pointer-events:none}
+.food-item .food-icon{font-size:22px;line-height:1}
+.npc-slot{position:absolute;border:3px dashed #d4a853;border-radius:50%; display:flex;flex-direction:column;align-items:center;justify-content:center; font-size:13px;color:#f5e6c8;text-align:center; background:rgba(26,20,16,.82);text-shadow:0 0 6px rgba(0,0,0,.85); transition:all .3s;animation:npcPulse 3s ease-in-out infinite;}
+@keyframes npcPulse{0%,100%{border-color:#d4a853}50%{border-color:#f0d060}}
+.npc-slot .npc-role{font-size:10px;color:#b8a080;margin-top:1px}
+.npc-slot.hover{border-color:#ffdd88;background:rgba(212,168,83,.25);transform:scale(1.08);animation:none}
+.npc-slot.fulfilled{border-color:#d4a853;animation:none}
+.dialogue-card{position:absolute;bottom:20px;left:20px;right:20px; background:linear-gradient(135deg, rgba(42,31,21,.98), rgba(30,20,12,.98)); border:2px solid #d4a853;border-radius:16px;padding:18px 20px; font-size:14px;line-height:1.9;z-index:10;display:none; box-shadow:0 8px 32px rgba(0,0,0,.6); animation:dialogueIn .3s ease-out;}
+@keyframes dialogueIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+.dialogue-card .speaker{color:#f0d060;font-weight:bold;margin-bottom:8px;font-size:15px}
+.particle{position:absolute;width:4px;height:4px;background:var(--gold); border-radius:50%;pointer-events:none; animation:float-up 3s ease-out forwards;}
+@keyframes float-up{0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-200px) scale(0)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- MAIN MENU -->
+  <div class="scene active" id="mainMenu">
+    <div class="title">传承彝族传统文化</div>
+    <div class="subtitle">—— 唤醒阿诗玛的祝福 ——</div>
+    <div style="margin-top:32px;font-size:14px;color:#baa078;text-align:center;line-height:2;margin-bottom:20px;text-shadow:0 0 6px rgba(0,0,0,.7)">
+      让村寨的火把节与彝族年<br>真正「团圆」
+    </div>
+    <button class="btn" onclick="Game.startIntro()">开始游戏</button>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center">
+      <button class="btn" style="padding:10px 20px;font-size:14px" onclick="Game.startLevel1()">第一关</button>
+      <button class="btn" style="padding:10px 20px;font-size:14px" onclick="Game.startLevel2()">第二关</button>
+      <button class="btn" style="padding:10px 20px;font-size:14px" onclick="Game.startLevel3()">第三关</button>
+    </div>
+  </div>
+
+<!-- INTRO SCENE -->
+  <div class="scene" id="introScene">
+    <div class="scroll-card" id="introCard">
+      <h2 id="introTitle"></h2>
+      <p id="introContent"></p>
+      <div class="hint">—— 点击继续 ——</div>
+    </div>
+  </div>
+
+  <!-- LEVEL 1: LACQUERWARE -->
+  <div class="scene" id="level1">
+    <button class="back-btn" onclick="Game.goBack()">← 返回</button>
+    <div style="color:var(--gold);font-size:16px;margin-bottom:8px" id="l1Title">🔥 第一关：漆器制作</div>
+    <!-- 教程 -->
+    <div class="scroll-card" id="l1Tutorial" style="text-align:center">
+      <h2>长老的教导</h2>
+      <p>族中的年轻人啊，火把节就要到了。<br><br>祭品需要用漆器来盛放，<br>象征着光明与温暖。<br><br>彝族漆器讲究<br>
+      <span style="display:inline-block;color:#fff;background:#1a1a1a;padding:6px 14px;border-radius:8px;margin:4px;font-weight:bold;border:2px solid #444">黑为底</span>
+      <span style="display:inline-block;color:#fff;background:#c8322a;padding:6px 14px;border-radius:8px;margin:4px;font-weight:bold;border:2px solid #e0453a">红为艳</span>
+      <span style="display:inline-block;color:#3a2a00;background:#d4a853;padding:6px 14px;border-radius:8px;margin:4px;font-weight:bold;border:2px solid #e8c060">黄为亮</span>
+      <br><br>先选纹样，再雕刻，最后上色。</p>
+      <button class="btn" style="margin-top:16px" onclick="Level1.start()">我准备好了</button>
+    </div>
+    <!-- 纹样选择 -->
+    <div class="scroll-card" id="l1PatternSelect" style="display:none;text-align:center">
+      <h2>选择纹样</h2>
+      <div style="display:flex;gap:16px;margin-top:16px;justify-content:center">
+        <button class="btn gold" onclick="Level1.beginCarving('sun')">☀️ 太阳纹</button>
+        <button class="btn gold" onclick="Level1.beginCarving('goat')">🐑 羊角纹</button>
+      </div>
+    </div>
+    <!-- 雕刻阶段 -->
+    <div id="l1CarvingPhase" style="display:none;text-align:center">
+      <div style="color:#c8b898;font-size:14px;margin-bottom:8px">沿着虚线描摹纹样</div>
+      <canvas id="l1Canvas" width="340" height="340"></canvas>
+      <div style="color:#d4a853;font-size:16px;margin-top:8px" id="l1CarvingScore"></div>
+    </div>
+    <!-- 上色阶段 -->
+    <div id="l1ColoringPhase" style="display:none;text-align:center">
+      <div style="color:#c8b898;font-size:14px;margin-bottom:4px">选择颜色，点击纹样区域上色</div>
+      <div style="display:flex;gap:12px;margin-bottom:8px;justify-content:center;align-items:center">
+        <div class="color-btn black selected" data-color="black" onclick="Level1.selectColor('black',this)"></div>
+        <div class="color-btn red" data-color="red" onclick="Level1.selectColor('red',this)"></div>
+        <div class="color-btn yellow" data-color="yellow" onclick="Level1.selectColor('yellow',this)"></div>
+        <span style="font-size:12px;color:#8a7060;margin-left:8px" id="l1ColorHint">先选颜色，再点区域</span>
+      </div>
+      <canvas id="l1ColoringCanvas" width="340" height="340"></canvas>
+      <div class="elder-bubble" id="l1ElderBubble">长老提示：这里用红色才对哦</div>
+    </div>
+    <!-- 验收 -->
+    <div class="scroll-card" id="l1Review" style="display:none;text-align:center">
+      <h2>成品验收</h2>
+      <p id="l1ReviewText"></p>
+      <p style="color:#d4a853;margin-top:8px">🏆 解锁成就：漆器匠人</p>
+      <p style="color:#b8a080;font-size:13px;margin-top:8px">"祖先用漆树的汁液，<br>给火把节的祭品穿上了漂亮衣裳"</p>
+      <button class="btn gold" style="margin-top:16px" onclick="Game.startLevel2()">前往火把节</button>
+    </div>
+  </div>
+
+  <!-- LEVEL 2: RUNNER -->
+  <div class="scene" id="level2">
+    <button class="back-btn" onclick="Game.goBack()">← 返回</button>
+    <button id="l2PauseBtn" class="back-btn" style="left:auto;right:8px;display:none" onclick="Level2.togglePause()">⏸ 暂停</button>
+    <div style="color:var(--gold);font-size:16px;margin-bottom:4px">🔥 第二关：火把节竞技</div>
+    <div id="l2PreGame" class="scroll-card" style="text-align:center">
+      <h2>火把节竞技</h2>
+      <p>沿着村寨石板路奔跑，<br>点燃沿途火把（收集15个即可通关），躲避障碍物。<br><br>❤️ 三条命，撞障碍扣命<br>🛡️ 护盾道具暂时无敌<br><br>⬆️ 上滑跳跃 ⬇️ 下滑蹲下<br>👆 点击火把将其点燃</p>
+      <button class="btn gold" style="margin-top:16px" onclick="Level2.start()">出发！</button>
+    </div>
+    <div id="l2Game" style="display:none;text-align:center">
+      <canvas id="l2Canvas" width="460" height="340"></canvas>
+      <div class="stat-row">
+        <span id="l2Lives">❤️❤️❤️</span>
+        <span id="l2TorchCount">🔥 0/8</span>
+        <span id="l2Distance">0m / 500m</span>
+        <span id="l2Score">⭐ 0</span>
+      </div>
+    </div>
+    <div id="l2Complete" class="scroll-card" style="display:none;text-align:center">
+      <h2 id="l2CompleteTitle"></h2>
+      <p id="l2CompleteText"></p>
+      <button class="btn gold" style="margin-top:16px;display:none" id="l2NextBtn" onclick="Game.startLevel3()">🍽️ 前往第三关 — 彝年团圆宴</button>
+      <button class="btn" style="margin-top:16px;display:none" id="l2RetryBtn" onclick="Level2.retry()">🔄 再来一次</button>
+      <button class="btn" style="margin-top:8px;display:none" id="l2MenuBtn" onclick="Game.backToMenu()">🏠 返回主菜单</button>
+    </div>
+  </div>
+
+  <!-- LEVEL 3: FEAST -->
+  <div class="scene" id="level3">
+    <button class="back-btn" onclick="Game.goBack()">← 返回</button>
+    <div style="color:var(--gold);font-size:16px;margin-bottom:4px">🍽️ 第三关：彝年团圆宴</div>
+    <div id="l3Game" style="position:relative;width:100%;flex:1;max-height:600px">
+      <div style="text-align:center;color:#c8b898;font-size:14px;margin-bottom:8px">把食物拖到对应的宾客面前</div>
+      <div id="l3Table" style="position:relative;width:100%;height:clamp(320px,60vh,520px);background:linear-gradient(180deg,#3a2a18,#2a1a10);border-radius:16px;border:2px solid #5a4030">
+      </div>
+    </div>
+    <div class="dialogue-card" id="l3Dialogue">
+      <div class="speaker" id="l3Speaker"></div>
+      <div id="l3DialogueText"></div>
+      <div style="text-align:center;margin-top:8px;font-size:12px;color:#8a7060">点击关闭</div>
+    </div>
+    <div id="l3Complete" class="scroll-card" style="display:none;text-align:center">
+      <h2>🎉 团圆宴圆满！</h2>
+      <p>五位宾客都享用到了心仪的美食，<br>学到了宝贵的彝族文化知识。<br><br>🏆 解锁成就：<span style=\"color:#f0d060;font-weight:bold\">团圆主理人</span></p>
+      <button class="btn gold" style="margin-top:16px" onclick="Game.startEnding()">迎接祝福</button>
+    </div>
+  </div>
+
+  <!-- ENDING -->
+  <div class="scene" id="endingScene">
+    <div class="scroll-card" id="endingCard">
+      <h2 id="endingTitle"></h2>
+      <p id="endingContent"></p>
+      <div class="hint" id="endingHint">—— 点击继续 ——</div>
+      <button class="btn gold" id="endingBtn" style="display:none;margin-top:16px" onclick="Game.backToMenu()">返回主菜单</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 美术资源配置 ====================
+// 将你的图片放到 yi-game/art/ 文件夹，然后修改下面的路径
+// 留空则使用代码绘制的默认图形
+const ART = {
+  // 主菜单
+  mainMenuBg: 'art/main-bg.png',
+  // 关卡1 漆器
+  elderPortrait: '',    // 例: 'art/elder.png' 长老头像
+  woodBaseImg: 'art/漆器.png',
+  lacquerwareDoneImg: 'art/lacquerware-done.png',
+  sunPatternImg: 'art/太阳纹（3）.png',
+  sunGuideImg: 'art/sun-guide.png',
+  goatPatternImg: '',   // 例: 'art/goat-pattern.png' 羊角纹图
+  goatGuideImg: '',     // 例: 'art/羊角纹-引导.png' 配套虚线引导图
+  // 关卡2 跑酷
+  playerSprite: 'art/跑酷人物.png',
+  bgVillage: 'art/背景图.png',
+  torchImg: 'art/火把_25x45_透明底.png',
+  fenceImg: '',         // 例: 'art/fence.png' 栅栏（约50x35）
+  potImg: '',           // 例: 'art/pot.png' 陶罐（约30x30）
+  lowFrameImg: '',      // 例: 'art/low-frame.png' 低矮竹架（约60x20）
+  // 关卡3 团圆宴
+  tableBg: 'art/彝族餐桌.png',
+  foodImgs: {},         // 例: { tuotuorou:'art/meat.png', qiaoba:'art/cake.png', ... }
+  npcImgs: {},          // 例: { bimo:'art/bimo.png', elder:'art/elder.png', ... }
+  // 结尾
+  endingBg: '',         // 例: 'art/ending-bg.jpg'
+};
+// 如果图片未配置，将自动使用代码绘制的默认图形
+// ==================== 美术配置结束 ====================
+
+// ==================== 场景管理器 ====================
+const Game = {
+  achievements: { lacquerware: false, torch: false, feast: false },
+  history: [],
+
+  show(sceneId) {
+    // 记录当前场景到历史
+    const cur = document.querySelector('.scene.active');
+    if (cur) this.history.push(cur.id);
+    document.querySelectorAll('.scene').forEach(s => { s.classList.remove('active'); s.classList.add('fadeout'); });
+    setTimeout(() => {
+      document.querySelectorAll('.scene').forEach(s => s.classList.remove('fadeout'));
+      const el = document.getElementById(sceneId);
+      if (el) el.classList.add('active');
+    }, 200);
+  },
+
+  goBack() {
+    if (this.history.length === 0) { this.show('mainMenu'); return; }
+    const prev = this.history.pop();
+    // 不让返回记录再次入栈
+    document.querySelectorAll('.scene').forEach(s => { s.classList.remove('active'); s.classList.add('fadeout'); });
+    setTimeout(() => {
+      document.querySelectorAll('.scene').forEach(s => s.classList.remove('fadeout'));
+      const el = document.getElementById(prev);
+      if (el) el.classList.add('active');
+    }, 200);
+  },
+
+  startIntro() {
+    IntroPage.current = 0;
+    IntroPage.show();
+    this.show('introScene');
+  },
+
+  startLevel1() { Level1.reset(); this.show('level1'); },
+  startLevel2() { Level2.state = 'pregame'; Level2.drawUI(); this.show('level2'); },
+  startLevel3() { this.show('level3'); setTimeout(() => Level3.init(), 250); },
+  startEnding() {
+    EndingPage.current = 0; EndingPage.show();
+    Game.achievements.lacquerware = true; Game.achievements.torch = true; Game.achievements.feast = true;
+    this.show('endingScene');
+    EndingPage.spawnParticles();
+  },
+  backToMenu() { this.show('mainMenu'); }
+};
+
+// ==================== 开场画卷 ====================
+const IntroPage = {
+  current: 0,
+  pages: [
+    { title: '阿诗玛的传说',
+      content: '阿诗玛是一个美丽、聪慧的撒尼姑娘，\n她与勇敢的青年阿黑相爱，\n却因拒绝财主热布巴拉家的强迫婚姻，\n被财主勾结恶势力绑架。\n\n阿黑历尽千辛万苦救出阿诗玛，\n归去途中又遭遇财主派来的洪水阻拦，\n阿诗玛不幸被洪水卷走，\n最终化为一座永恒的山峰——\n云南石林中的阿诗玛石峰。' },
+    { title: '火把节的使命',
+      content: '你作为彝族村落中的年轻一代，\n正在为村落筹备火把节。\n\n从老人口中得知一个古老的传说：\n阿诗玛化为山石之后，\n她的祝福能让火把节的火把火焰更旺，\n彝族年的团圆更加温暖。\n\n这份祝福需要解锁三份成就：\n\n🔥 漆器匠人 — 制作祭品漆器\n🔥 传火使者 — 点燃沿途火把\n🔥 团圆主理人 — 筹备彝年宴席' }
+  ],
+  show() {
+    const p = this.pages[this.current];
+    document.getElementById('introTitle').textContent = p.title;
+    document.getElementById('introContent').textContent = p.content;
+  }
+};
+document.getElementById('introScene').addEventListener('click', () => {
+  if (IntroPage.current < IntroPage.pages.length - 1) {
+    IntroPage.current++;
+    IntroPage.show();
+  } else {
+    Game.startLevel1();
+  }
+});
+
+// ==================== 关卡1：漆器制作 ====================
+const Level1 = {
+  phase: 'tutorial', pattern: '', carvingScore: 0, selectedColor: '',
+  colorZones: [], colorsFilled: {},
+
+  reset() {
+    this.phase = 'tutorial'; this.pattern = ''; this.carvingScore = 0;
+    this.selectedColor = ''; this.colorZones = []; this.colorsFilled = {};
+    document.getElementById('l1Tutorial').style.display = '';
+    document.getElementById('l1PatternSelect').style.display = 'none';
+    document.getElementById('l1CarvingPhase').style.display = 'none';
+    document.getElementById('l1ColoringPhase').style.display = 'none';
+    document.getElementById('l1Review').style.display = 'none';
+  },
+
+  start() {
+    document.getElementById('l1Tutorial').style.display = 'none';
+    document.getElementById('l1PatternSelect').style.display = '';
+  },
+
+  beginCarving(type) {
+    this.pattern = type;
+    document.getElementById('l1PatternSelect').style.display = 'none';
+    document.getElementById('l1CarvingPhase').style.display = '';
+    document.getElementById('l1CarvingScore').textContent = '';
+    L1Carving.start(type);
+  },
+
+  selectColor(color, el) {
+    this.selectedColor = color;
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('l1ColorHint').textContent = `已选：${color==='black'?'黑底':color==='red'?'红色':'黄色'}`;
+  },
+
+  startColoring() {
+    document.getElementById('l1CarvingPhase').style.display = 'none';
+    document.getElementById('l1ColoringPhase').style.display = '';
+    L1Coloring.start();
+  },
+
+  finishColoring(score) {
+    document.getElementById('l1ColoringPhase').style.display = 'none';
+    document.getElementById('l1Review').style.display = '';
+    const total = this.carvingScore + score;
+    let comment = total >= 90 ? '太棒了！这件漆器做得比我还好！' : total >= 60 ? '不错，第一次就能做成这样，很有天赋。' : '还需多加练习，但心意到了就好。';
+    document.getElementById('l1ReviewText').textContent = `${comment}\n\n雕刻得分：${this.carvingScore} 分\n上色得分：${score} 分\n总分：${total} 分`;
+    Game.achievements.lacquerware = true;
+  }
+};
+
+// 雕刻子模块
+const L1Carving = {
+  canvas: null, ctx: null, guidePath: [], playerPath: [], drawing: false, patternType: '',
+  patternImg: null, guideImg: null, woodImg: null,
+  start(type) {
+    this.canvas = document.getElementById('l1Canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.patternType = type; this.playerPath = []; this.patternImg = null; this.guideImg = null; this.woodImg = null;
+    const cx = 170, cy = 170; this.guidePath = [];
+    if (type === 'sun') {
+      // 太阳纹：8瓣火焰外轮廓 + 内圆 + 放射线
+      const petals = 8;
+      // 外轮廓 — 火焰形波浪圆
+      for (let i = 0; i <= 160; i++) {
+        const a = (i/160)*Math.PI*2;
+        // 用余弦的绝对值产生8个火焰波峰
+        const wave = Math.pow(Math.abs(Math.cos(petals/2 * a)), 0.6);
+        const r = 55 + wave * 75;
+        this.guidePath.push({x:cx+Math.cos(a)*r, y:cy+Math.sin(a)*r});
+      }
+      // 内圆
+      for (let i = 0; i <= 40; i++) {
+        const a = (i/40)*Math.PI*2;
+        this.guidePath.push({x:cx+Math.cos(a)*38, y:cy+Math.sin(a)*38});
+      }
+      // 8条火焰脊线（从内圆到外缘）
+      for (let p = 0; p < petals; p++) {
+        const a = (p/petals)*Math.PI*2;
+        const tipR = 55 + Math.pow(Math.abs(Math.cos(petals/2*a)), 0.6)*75;
+        for (let d = 0; d <= 12; d++) {
+          const t = d/12;
+          const r = 38 + (tipR - 38) * t;
+          this.guidePath.push({x:cx+Math.cos(a)*r, y:cy+Math.sin(a)*r});
+        }
+      }
+    } else {
+      for (let side = 0; side < 2; side++) {
+        const dir = side === 0 ? 1 : -1;
+        for (let i = 0; i <= 24; i++) {
+          const t = i / 24, x = cx + dir*(t*100 - 30), y = cy + 60 - t*120 + Math.sin(t*Math.PI)*30*(1-t);
+          this.guidePath.push({x, y});
+        }
+      }
+    }
+    // 加载底图 + 纹样 + 引导图
+    const imgSrc = type === 'sun' ? ART.sunPatternImg : ART.goatPatternImg;
+    const guideSrc = type === 'sun' ? ART.sunGuideImg : ART.goatGuideImg;
+    let loaded = 0, need = 0;
+    if (ART.woodBaseImg) {
+      need++;
+      this.woodImg = new Image();
+      this.woodImg.onload = () => { loaded++; if (loaded >= need) this.drawGuide(); };
+      this.woodImg.src = ART.woodBaseImg;
+    }
+    if (imgSrc) {
+      need++;
+      this.patternImg = new Image();
+      this.patternImg.onload = () => { loaded++; if (loaded >= need) this.drawGuide(); };
+      this.patternImg.src = imgSrc;
+    }
+    if (guideSrc) {
+      need++;
+      this.guideImg = new Image();
+      this.guideImg.onload = () => { loaded++; if (loaded >= need) this.drawGuide(); };
+      this.guideImg.src = guideSrc;
+    }
+    if (need === 0) this.drawGuide();
+    this.canvas.onpointerdown = (e) => { this.drawing = true; this.playerPath = []; };
+    this.canvas.onpointermove = (e) => {
+      if (!this.drawing) return;
+      const r = this.canvas.getBoundingClientRect(), s = 340 / r.width;
+      this.playerPath.push({x:(e.clientX-r.left)*s, y:(e.clientY-r.top)*s});
+      this.drawPlayerLine();
+    };
+    this.canvas.onpointerup = () => { this.drawing = false; this.evaluate(); };
+  },
+  drawGuide() {
+    const ctx = this.ctx; ctx.clearRect(0,0,340,340);
+    // 纹样图（半透明叠在上面）
+    if (this.patternImg) {
+      ctx.globalAlpha = 0.55;
+      ctx.drawImage(this.patternImg, 10, 10, 320, 320);
+      ctx.globalAlpha = 1;
+    }
+    // 自定义引导图（先直接画，确认可见后再调色）
+    if (this.guideImg) {
+      ctx.globalAlpha = 0.8;
+      ctx.drawImage(this.guideImg, 10, 10, 320, 320);
+      ctx.globalAlpha = 1;
+    } else if (this.guidePath.length > 0) {
+      ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 2.5; ctx.setLineDash([4,6]);
+      ctx.beginPath();
+      for (let i = 1; i < this.guidePath.length; i++) { ctx.moveTo(this.guidePath[i-1].x, this.guidePath[i-1].y); ctx.lineTo(this.guidePath[i].x, this.guidePath[i].y); }
+      ctx.stroke(); ctx.setLineDash([]);
+    // 护盾收集闪光
+    if (this.shieldFlash > 0) {
+      ctx.fillStyle = 'rgba(100,180,255,' + (this.shieldFlash * 0.5) + ')';
+      ctx.fillRect(0, 0, w, h);
+    }
+    }
+  },
+  drawPlayerLine() {
+    const ctx = this.ctx; this.drawGuide();
+    ctx.strokeStyle = 'rgba(255,180,50,.85)'; ctx.lineWidth = 4; ctx.beginPath();
+    for (let i = 1; i < this.playerPath.length; i++) { ctx.moveTo(this.playerPath[i-1].x, this.playerPath[i-1].y); ctx.lineTo(this.playerPath[i].x, this.playerPath[i].y); }
+    ctx.stroke();
+  },
+  evaluate() {
+    let total = 0, cnt = 0;
+    for (const pp of this.playerPath) {
+      let min = Infinity;
+      for (const gp of this.guidePath) { const d = Math.hypot(pp.x-gp.x, pp.y-gp.y); if (d<min) min=d; }
+      if (min < 35) { total += 1 - min/35; cnt++; }
+    }
+    const accuracy = cnt>0 ? (total/cnt)*60 : 10;
+    const coverage = Math.min(40, (cnt/this.guidePath.length)*40);
+    Level1.carvingScore = Math.round(accuracy + coverage);
+    document.getElementById('l1CarvingScore').textContent = `雕刻完成！得分：${Level1.carvingScore} 分`;
+    this.canvas.onpointerdown = this.canvas.onpointermove = this.canvas.onpointerup = null;
+    setTimeout(() => Level1.startColoring(), 1200);
+  }
+};
+
+// 上色子模块
+const L1Coloring = {
+  canvas: null, ctx: null, zones: [], woodImg: null,
+  start() {
+    this.canvas = document.getElementById('l1ColoringCanvas');
+    this.ctx = this.canvas.getContext('2d');
+    const cx = 170, cy = 170;
+    this.zones = [
+      {id:'center', cx, cy, r:42, correct:'yellow', filled:false},
+      {id:'r0', cx:cx+55, cy, r:28, correct:'red', filled:false},
+      {id:'r1', cx:cx+27, cy:cy+48, r:28, correct:'red', filled:false},
+      {id:'r2', cx:cx-27, cy:cy+48, r:28, correct:'red', filled:false},
+      {id:'r3', cx:cx-55, cy, r:28, correct:'red', filled:false},
+      {id:'r4', cx:cx-27, cy:cy-48, r:28, correct:'red', filled:false},
+      {id:'r5', cx:cx+27, cy:cy-48, r:28, correct:'red', filled:false},
+    ];
+    // 加载漆器底图
+    if (ART.woodBaseImg) {
+      this.woodImg = new Image();
+      this.woodImg.onload = () => this.drawAll();
+      this.woodImg.src = ART.woodBaseImg;
+    }
+    this.drawAll();
+    this.canvas.onpointerup = (e) => {
+      const r = this.canvas.getBoundingClientRect(), s = 340 / r.width;
+      const mx = (e.clientX - r.left) * s, my = (e.clientY - r.top) * s;
+      if (!Level1.selectedColor) { document.getElementById('l1ColorHint').textContent = '请先选择一个颜色！'; return; }
+      let hit = null;
+      for (const z of this.zones) {
+        if (z.filled) continue;
+        if (Math.hypot(mx-z.cx, my-z.cy) <= z.r + 8) { hit = z; break; }
+      }
+      if (!hit) return;
+      if (Level1.selectedColor !== hit.correct) {
+        const elder = document.getElementById('l1ElderBubble');
+        elder.style.display = ''; elder.textContent = hit.correct==='red'?'长老：火焰要用红色才够热烈哦':'长老：太阳中心要用黄色才够明亮哦';
+        setTimeout(() => elder.style.display = 'none', 2000);
+        return;
+      }
+      hit.filled = true;
+      const cmap = {red:'#c8322a', yellow:'#d4a853', black:'#1a1a1a'};
+      this.ctx.fillStyle = cmap[Level1.selectedColor];
+      this.ctx.beginPath(); this.ctx.arc(hit.cx, hit.cy, hit.r-2, 0, Math.PI*2); this.ctx.fill();
+      document.getElementById('l1ColorHint').textContent = '已选：' + (Level1.selectedColor==='red'?'红色':'黄色');
+      if (this.zones.every(z=>z.filled)) {
+        // 替换为成品图
+        if (ART.lacquerwareDoneImg) {
+          const doneImg = new Image();
+          doneImg.onload = () => { this.ctx.clearRect(0,0,340,340); this.ctx.drawImage(doneImg, 0, 0, 340, 340); };
+          doneImg.src = ART.lacquerwareDoneImg;
+        }
+        const score = Math.round((this.zones.filter(z=>z.filled).length/this.zones.length)*100);
+        setTimeout(() => Level1.finishColoring(score), 2500);
+      }
+    };
+  },
+  drawAll() {
+    const ctx = this.ctx; ctx.clearRect(0,0,340,340);
+    if (this.woodImg) {
+      ctx.drawImage(this.woodImg, 0, 0, 340, 340);
+    } else {
+      ctx.fillStyle = '#1a1a1a'; ctx.fillRect(20,20,300,300);
+    }
+    // 显示可上色区域（明显闪烁提示圈）
+    ctx.save();
+    for (const z of this.zones) {
+      if (z.filled) continue;
+      // 外圈虚线描边
+      ctx.strokeStyle = z.correct==='yellow'?'rgba(255,220,80,.8)':'rgba(255,80,60,.8)';
+      ctx.lineWidth = 3; ctx.setLineDash([5,3]);
+      ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+6, 0, Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      // 半透明填充
+      ctx.fillStyle = z.correct==='yellow'?'rgba(255,220,80,.18)':'rgba(255,80,60,.18)';
+      ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r+4, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  },
+};
+
+// ==================== 关卡2：火把节跑酷 ====================
+const Level2 = {
+  state: 'pregame', canvas: null, ctx: null,
+  player: { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0 },
+  speed: 200, distance: 0, torchesLit: 0, totalTorches: 20, torchTarget: 15, totalDist: 9999, lives: 3, shieldExpiry: 0, shieldsCollected: 0, shieldFlash: 0,
+  items: [], nightProgress: 0, animId: null, lastTime: 0,
+
+  drawUI() {
+    document.getElementById('l2PreGame').style.display = this.state==='pregame'?'':'none';
+    document.getElementById('l2Game').style.display = this.state==='running'||this.state==='over'?'':'none';
+    document.getElementById('l2Complete').style.display = this.state==='over'?'':'none';
+  },
+
+  start() {
+    this.state = "running"; this.distance = 0; this.torchesLit = 0; this.lives = 3; this.shieldExpiry = 0; this.shieldsCollected = 0; this.shieldFlash = 0;
+    this.player = { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0 };
+    this.nightProgress = 0; this.items = []; this.speed = 200; this.lastTime = performance.now();
+    this.canvas = document.getElementById('l2Canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.bgImg = null; this.sprites = {};
+    const loadImg = (field, key) => {
+      if (ART[field]) { this.sprites[key] = new Image(); this.sprites[key].src = ART[field]; }
+    };
+    loadImg('playerSprite', 'player');
+    loadImg('torchImg', 'torch');
+    loadImg('fenceImg', 'fence');
+    loadImg('potImg', 'pot');
+    loadImg('lowFrameImg', 'low');
+    document.getElementById('l2PauseBtn').style.display = '';
+    document.getElementById('l2PauseBtn').textContent = '⏸ 暂停';
+    this.generateItems();
+    this.bindInput();
+    this.drawUI();
+    // 先画加载提示
+    this.ctx.fillStyle = '#1a1410'; this.ctx.fillRect(0, 0, 460, 340);
+    this.ctx.fillStyle = '#8a7060'; this.ctx.font = '16px serif'; this.ctx.textAlign = 'center';
+    this.ctx.fillText('加载中...', 230, 170);
+    const go = () => { this.lastTime = performance.now(); requestAnimationFrame((t) => this.loop(t)); };
+    if (ART.bgVillage) {
+      this.bgImg = new Image();
+      this.bgImg.onload = go;
+      this.bgImg.onerror = go;
+      this.bgImg.src = ART.bgVillage;
+    } else { go(); }
+  },
+
+  togglePause() {
+    if (this.state === 'running') {
+      this.state = 'paused';
+      cancelAnimationFrame(this.animId);
+      document.getElementById('l2PauseBtn').textContent = '▶ 继续';
+      // 画布显示暂停遮罩
+      this.ctx.fillStyle = 'rgba(0,0,0,.6)';
+      this.ctx.fillRect(0,0,460,340);
+      this.ctx.fillStyle = '#d4a853';
+      this.ctx.font = 'bold 28px serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('已暂停', 230, 170);
+      this.ctx.font = '16px serif';
+      this.ctx.fillText('点击右上角继续', 230, 200);
+    } else if (this.state === 'paused') {
+      this.state = 'running';
+      this.lastTime = performance.now();
+      document.getElementById('l2PauseBtn').textContent = '⏸ 暂停';
+      this.animId = requestAnimationFrame((t) => this.loop(t));
+    }
+  },
+
+  generateItems() {
+    this.items = [];
+    // 1. 火把（每100m一个，共20个）
+    for (let d = 50; d <= 2000; d += 2000 / this.totalTorches) {
+      this.items.push({ type: 'torch', dist: d, lit: false });
+    }
+
+    // 2. 护盾（每180m一个）
+    for (let d = 250; d < 2000; d += 360) {
+      this.items.push({ type: 'shield', dist: d, collected: false });
+    }
+
+    // 3. 障碍物（约每100m一个，同跑道避开火把/护盾）
+    const obstacleTypes = ['fence','low','pot'];
+    for (let d = 50; d < 2000; d += 55 + Math.random() * 45) {
+      if (this.items.some(i => Math.abs(i.dist - d) < 22)) continue;
+      const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+      this.items.push({ type, dist: d });
+    }
+
+    this.items.sort((a, b) => a.dist - b.dist);
+  },
+
+  bindInput() {
+    let sx = 0, sy = 0, moved = false;
+    const c = this.canvas;
+    c.onpointerdown = (e) => { sx = e.clientX; sy = e.clientY; moved = false; };
+    c.onpointermove = (e) => {
+      if (Math.abs(e.clientX-sx) > 3 || Math.abs(e.clientY-sy) > 3) moved = true;
+    };
+    c.onpointerup = (e) => {
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!moved && Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+        // Tap: light the nearest torch within 20m
+        let nearest = null, nearestDist = Infinity;
+        for (const item of this.items) {
+          if (item.type !== 'torch' || item.lit) continue;
+          const d = Math.abs(item.dist - this.distance);
+          if (d < 5 && d < nearestDist) { nearest = item; nearestDist = d; }
+        }
+        if (nearest) {
+          nearest.lit = true; this.torchesLit++;
+          document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
+        }
+      } else if (Math.abs(dy) > Math.abs(dx)) {
+        if (dy < -18 && !this.player.jumping) { this.player.jumping = true; this.player.vy = 7.5; }
+        else if (dy > 18 && !this.player.jumping) { this.player.ducking = true; setTimeout(()=>this.player.ducking=false, 600); }
+      } else {
+        // 单跑道，无左右移动
+      }
+    };
+    // 键盘操控
+    this._keyHandler = (e) => {
+      if (this.state !== 'running' && this.state !== 'paused') return;
+      if (e.key === 'Escape' || (e.key === ' ' && this.state === 'paused')) {
+        if (this.state === 'running' || this.state === 'paused') this.togglePause();
+        return;
+      }
+      if (this.state !== 'running') return;
+      switch(e.key) {
+        case 'ArrowUp': case 'w': if(!this.player.jumping){this.player.jumping=true;this.player.vy=7.5;} e.preventDefault(); break;
+        case 'ArrowDown': case 's': if(!this.player.jumping){this.player.ducking=true;} e.preventDefault(); break;
+        case ' ': {
+          let nearest = null, nd = Infinity;
+          for (const item of this.items) {
+            if (item.type!=='torch'||item.lit) continue;
+            const d = Math.abs(item.dist-this.distance);
+            if (d<5&&d<nd){nearest=item;nd=d;}
+          }
+          if(nearest){nearest.lit=true;this.torchesLit++;
+            document.getElementById('l2TorchCount').textContent='🔥 '+this.torchesLit+'/'+this.totalTorches;}
+          e.preventDefault();
+        } break;
+      }
+    };
+    this._keyupHandler = (e) => {
+      if (e.key === 'ArrowDown' || e.key === 's') {
+        this.player.ducking = false;
+      }
+    };
+    document.addEventListener('keydown', this._keyHandler);
+    document.addEventListener('keyup', this._keyupHandler);
+  },
+
+  loop(now) {
+    if (this.state !== 'running') { if (this.state !== 'paused') return; else return; }
+    const dt = Math.min(0.1, (now - this.lastTime) / 1000);
+    this.lastTime = now;
+
+    this.distance += this.speed * dt / 5;
+    if (this.player.invincible > 0) this.player.invincible -= dt;
+
+    // 跳跃物理
+    if (this.player.jumping) {
+      this.player.y += this.player.vy * 60 * dt;
+      this.player.vy -= 16 * dt;
+      if (this.player.y <= 0) { this.player.y = 0; this.player.jumping = false; this.player.vy = 0; }
+    }
+
+    // 护盾计时（基于绝对时间戳，不受帧率影响）
+    // 碰撞检测 & 道具收集（X+Y 轴精确重叠）
+    const SCALE = 3.5;
+    const PX_REF = 100;
+    const GND = 280; // 地面 Y 坐标
+    const playerScreenX = PX_REF;
+    const playerW = this.player.ducking ? 39 : 36;
+    const playerLeft = playerScreenX - playerW/2;
+    const playerRight = playerScreenX + playerW/2;
+
+    // 人物垂直范围（像素）
+    const playerBaseY = 285 - this.player.y; // py - player.y
+    const playerPH = this.player.ducking ? 28 : this.player.jumping ? 42 : 48;
+    const playerTop = playerBaseY - playerPH;
+    const playerBottom = playerBaseY;
+
+    for (const item of this.items) {
+      if (item.type === 'torch' || (item.lit !== undefined && item.lit)) continue;
+
+      const relDist = item.dist - this.distance;
+      const itemScreenX = PX_REF + relDist * SCALE;
+
+      // 各元素宽度 + 垂直范围（与渲染完全一致）
+      let itemW = 0, itemTop = 0, itemBottom = 0;
+      if (item.type === 'fence') {
+        itemW = 44; itemTop = GND - 40; itemBottom = GND;
+      } else if (item.type === 'low') {
+        itemW = 67; itemTop = GND - 38; itemBottom = GND - 28;
+      } else if (item.type === 'pot') {
+        itemW = 31; itemTop = GND - 25; itemBottom = GND;
+      } else if (item.type === 'shield') {
+        itemW = 30; // 收集范围比视觉略宽，确保可靠拾取
+        itemTop = GND - 20; itemBottom = GND;
+      }
+      const itemLeft = itemScreenX - itemW/2;
+      const itemRight = itemScreenX + itemW/2;
+
+      // 只有 X 轴重叠才继续
+      if (itemRight < playerLeft || itemLeft > playerRight) continue;
+
+      // --- 道具收集（护盾：X 重叠即可，无需 Y 检查）---
+      if (item.type === 'shield' && !item.collected) {
+        item.collected = true;
+        this.shieldExpiry = performance.now() + 3000;
+        this.shieldsCollected++;
+        this.shieldFlash = 0.5;
+        continue;
+      }
+
+      // --- 障碍物碰撞 ---
+      if (this.player.invincible > 0 || performance.now() < this.shieldExpiry) continue;
+
+      // Y 轴精确判断：只有人物身体和障碍物在 Y 轴真正重叠才算碰撞
+      const yOverlap = playerBottom > itemTop && playerTop < itemBottom;
+      if (!yOverlap) continue; // 跳得够高或蹲得够低，Y 轴无重叠 → 闪避成功
+
+      // 撞到障碍：扣一条命
+      this.lives--;
+      this.player.invincible = 2;
+      this.speed = 120;
+      setTimeout(() => { if (this.state==='running') this.speed = 200; }, 1500);
+      if (this.lives <= 0) { this.gameOver(); return; }
+    }
+
+    if (this.shieldFlash > 0) this.shieldFlash -= dt;
+    this.nightProgress = Math.min(1, this.distance / this.totalDist);
+    this.updateHUD();
+    this.render();
+    if (this.torchesLit >= this.torchTarget) { this.finish(); return; }
+    this.animId = requestAnimationFrame((t) => this.loop(t));
+  },
+
+
+  updateHUD() {
+    const hearts = '❤️'.repeat(Math.max(0, this.lives));
+    const lost = '🖤'.repeat(Math.max(0, 3 - this.lives));
+    document.getElementById('l2Lives').textContent = hearts + lost;
+    document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
+    document.getElementById('l2Distance').textContent = Math.floor(this.distance) + 'm';
+    // 护盾状态
+    const shieldLeft = (this.shieldExpiry - performance.now()) / 1000;
+    if (shieldLeft > 0) {
+      document.getElementById('l2Lives').textContent = '🛡️ ' + hearts + lost + ' (' + shieldLeft.toFixed(1) + 's)';
+    }
+  },
+
+      gameOver() {
+    this.state = 'over'; cancelAnimationFrame(this.animId);
+    document.getElementById('l2PauseBtn').style.display = 'none';
+    document.getElementById('l2CompleteTitle').textContent = '💔 你倒下了……';
+    document.getElementById('l2CompleteText').textContent =
+      '点燃了 ' + this.torchesLit + '/' + this.torchTarget + ' 个火把\n跑了 ' + Math.floor(this.distance) + 'm\n\n村民将你扶起，递来一碗泡水酒——\n"休息一下，再来一次吧，年轻人。"';
+    if (this.torchesLit >= this.torchTarget) Game.achievements.torch = true;
+    document.getElementById('l2NextBtn').style.display = 'none';
+    document.getElementById('l2RetryBtn').style.display = '';
+    document.getElementById('l2MenuBtn').style.display = '';
+    this.drawUI();
+  },
+
+  retry() {
+    this.state = 'pregame'; this.drawUI();
+  },
+  render() {
+    const ctx = this.ctx, w = 460, h = 340;
+    // 背景图
+    if (this.bgImg && this.bgImg.complete && this.bgImg.naturalWidth > 0) {
+      ctx.drawImage(this.bgImg, 0, 0, w, h);
+    } else {
+      const nr = Math.floor(255 - this.nightProgress*220);
+      const ng = Math.floor(170 - this.nightProgress*130);
+      const nb = Math.floor(80 - this.nightProgress*40);
+      ctx.fillStyle = `rgb(${nr},${ng},${nb})`; ctx.fillRect(0,0,w,h);
+    }
+    // 夜色遮罩
+    if (this.nightProgress > 0.05) {
+      ctx.fillStyle = `rgba(10,5,30,${this.nightProgress*0.35})`;
+      ctx.fillRect(0, 0, w, h);
+    }
+    // 地面（有背景图时隐藏）
+    const PLAYER_SCREEN_X = 100;
+    const SCALE = 3.5;
+    if (!this.bgImg || !this.bgImg.complete || this.bgImg.naturalWidth === 0) {
+      ctx.fillStyle = '#3a2a18'; ctx.fillRect(0,h-40,w,40);
+      ctx.fillStyle = '#4a3a28'; ctx.fillRect(0,h-40,w,3);
+    }
+        // 物品（用距离换算屏幕位置）
+    for (const item of this.items) {
+      const relDist = item.dist - this.distance; // 相对玩家的距离（米）
+      const ix = PLAYER_SCREEN_X + relDist * SCALE;
+      if (ix < -40 || ix > w + 40) continue;
+      const laneOffset = 0;
+      const iy = h - 60;
+      if (item.type === 'torch') {
+        const drawFlame = (cx, cy, scale) => {
+          const t = performance.now() / 80;
+          const flicker = 1 + 0.08 * Math.sin(t * 3.7) * Math.cos(t * 2.3);
+          ctx.fillStyle = '#ff5500';
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.bezierCurveTo(cx - 8*scale*flicker, cy - 3*scale, cx - 9*scale*flicker, cy - 18*scale, cx, cy - 24*scale*flicker);
+          ctx.bezierCurveTo(cx + 9*scale*flicker, cy - 18*scale, cx + 8*scale*flicker, cy - 3*scale, cx, cy);
+          ctx.fill();
+          ctx.fillStyle = '#ffaa00';
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - 1*scale);
+          ctx.bezierCurveTo(cx - 5*scale*flicker, cy - 5*scale, cx - 6*scale*flicker, cy - 15*scale, cx, cy - 19*scale*flicker);
+          ctx.bezierCurveTo(cx + 6*scale*flicker, cy - 15*scale, cx + 5*scale*flicker, cy - 5*scale, cx, cy - 1*scale);
+          ctx.fill();
+          ctx.fillStyle = '#ffe880';
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - 2*scale);
+          ctx.bezierCurveTo(cx - 2.5*scale*flicker, cy - 7*scale, cx - 3*scale*flicker, cy - 13*scale, cx, cy - 16*scale*flicker);
+          ctx.bezierCurveTo(cx + 3*scale*flicker, cy - 13*scale, cx + 2.5*scale*flicker, cy - 7*scale, cx, cy - 2*scale);
+          ctx.fill();
+        };
+
+        if (this.sprites.torch && this.sprites.torch.complete) {
+          const th = item.lit ? 63 : 49;
+          ctx.drawImage(this.sprites.torch, ix+laneOffset-17, iy-48, 34, th);
+          if (item.lit) {
+            drawFlame(ix+laneOffset, iy-54, 0.9);
+          }
+        } else {
+          ctx.fillStyle = '#6a5a4a'; ctx.fillRect(ix+laneOffset-4, iy-38, 8, 28);
+          if (item.lit) {
+            drawFlame(ix+laneOffset, iy-28, 1.2);
+          } else {
+            ctx.fillStyle = '#bbb'; ctx.beginPath(); ctx.arc(ix+laneOffset, iy-41, 7, 0, Math.PI*2); ctx.fill();
+          }
+        }
+      } else if (item.type === 'fence') {
+        if (this.sprites.fence && this.sprites.fence.complete) {
+          ctx.drawImage(this.sprites.fence, ix+laneOffset-22, iy-40, 44, 40);
+        } else {
+          ctx.fillStyle = "#8B4513"; ctx.fillRect(ix+laneOffset-19, iy-40, 38, 7);
+          ctx.fillRect(ix+laneOffset-19, iy-33, 6, 26); ctx.fillRect(ix+laneOffset+13, iy-33, 6, 26);
+        }
+      } else if (item.type === 'low') {
+        if (this.sprites.low && this.sprites.low.complete) {
+          ctx.drawImage(this.sprites.low, ix+laneOffset-34, iy-38, 67, 10);
+        } else {
+          ctx.fillStyle = "#A0522D"; ctx.fillRect(ix+laneOffset-31, iy-38, 62, 6);
+          ctx.fillRect(ix+laneOffset-31, iy-32, 7, 8); ctx.fillRect(ix+laneOffset+24, iy-32, 7, 8);
+        }
+      } else if (item.type === 'pot') {
+        if (this.sprites.pot && this.sprites.pot.complete) {
+          ctx.drawImage(this.sprites.pot, ix+laneOffset-15, iy-25, 31, 25);
+        } else {
+          ctx.fillStyle = "#8B7355"; ctx.beginPath(); ctx.arc(ix+laneOffset, iy-13, 14, 0, Math.PI*2); ctx.fill();
+        }
+      }
+      if (item.type === 'shield' && !item.collected) {
+        ctx.fillStyle = '#4488ee'; ctx.beginPath(); ctx.arc(ix+laneOffset, iy-14, 13, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#88bbff'; ctx.beginPath(); ctx.arc(ix+laneOffset, iy-17, 7, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 14px serif'; ctx.textAlign = 'center'; ctx.fillText('S', ix+laneOffset, iy-11);
+      }
+    }
+    // 玩家
+    const px = PLAYER_SCREEN_X;
+    const py = h - 55 - this.player.y;
+    if (this.player.invincible <= 0 || Math.floor(this.player.invincible*12)%2===0) {
+      if (this.sprites.player && this.sprites.player.complete) {
+        const pw = this.player.ducking ? 28 : 26;
+        const ph = this.player.ducking ? 28 : this.player.jumping ? 42 : 48;
+        ctx.drawImage(this.sprites.player, px-pw/2, py-ph, pw, ph);
+        if (performance.now() < this.shieldExpiry) {
+          const pulse = 1 + 0.4 * Math.sin(performance.now()/150);
+          ctx.strokeStyle = 'rgba(100,180,255,' + (0.6 + 0.3*Math.sin(performance.now()/200)) + ')';
+          ctx.lineWidth = 4 * pulse; ctx.beginPath(); ctx.arc(px, py-ph/2, ph/2+8, 0, Math.PI*2); ctx.stroke();
+        }
+      } else {
+        ctx.fillStyle = this.player.ducking ? '#e0c070' : '#f5e6c8';
+        if (this.player.ducking) {
+          ctx.fillRect(px-17, py-11, 34, 20);
+          ctx.fillStyle = '#f5e6c8'; ctx.beginPath(); ctx.arc(px, py-17, 10, 0, Math.PI*2); ctx.fill();
+        } else {
+          ctx.fillRect(px-14, py-31, 28, 36);
+          ctx.fillStyle = '#f5e6c8'; ctx.beginPath(); ctx.arc(px, py-36, 11, 0, Math.PI*2); ctx.fill();
+        }
+        if (performance.now() < this.shieldExpiry) {
+          const pulse = 1 + 0.4 * Math.sin(performance.now()/150);
+          ctx.strokeStyle = 'rgba(100,180,255,' + (0.6 + 0.3*Math.sin(performance.now()/200)) + ')';
+          ctx.lineWidth = 4 * pulse; ctx.beginPath(); ctx.arc(px, py-18, 24, 0, Math.PI*2); ctx.stroke();
+        }
+      }
+    }
+    // 自动点亮附近经过的火把
+    for (const item of this.items) {
+      if (item.type === 'torch' && !item.lit && item.dist <= this.distance && (this.distance - item.dist) < 4) {
+        item.lit = true; this.torchesLit++;
+        document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
+      }
+    }
+
+  },
+
+          finish() {
+    this.state = "over"; cancelAnimationFrame(this.animId);
+    document.getElementById("l2PauseBtn").style.display = "none";
+    var allLit = this.torchesLit >= this.torchTarget;
+    Game.achievements.torch = allLit;
+    document.getElementById("l2CompleteTitle").textContent = allLit ? "\u2728 收集了 " + this.torchesLit + " 个火把！" : "比赛结束";
+    document.getElementById("l2CompleteText").textContent = allLit
+      ? ["完整版《阿诗玛》民歌响起——","\u201C火把照亮阿诗玛的路\u201D","","村民们聚集在广场，主篝火熊熊燃起！","\u201C阿诗玛化为山石后，每年火把节","都有火光指引族人\u201D","","\u2764\uFE0F 剩余生命：" + this.lives].join("\n")
+      : ["点燃了 "+this.torchesLit+"/"+this.torchTarget+" 个火把","跑了 "+Math.floor(this.distance)+"m","\u2764\uFE0F 剩余生命："+this.lives].join("\n");
+    document.getElementById("l2NextBtn").style.display = allLit ? "" : "none";
+    document.getElementById("l2RetryBtn").style.display = "";
+    document.getElementById("l2MenuBtn").style.display = "none";
+    this.drawUI();
+  },
+
+};
+
+// ==================== 关卡3：彝年团圆宴 ====================
+const Level3 = {
+  // 行布局：5行，食物左 NPC右，init 时动态算坐标
+  foods: [
+    { id: 'tuotuorou', name: '坨坨肉', icon: '🥩', row: 0, col: 0 },
+    { id: 'kuba', name: '苦荞饼', icon: '🫓', row: 0, col: 1 },
+    { id: 'qiaoba', name: '荞粑', icon: '🥮', row: 1, col: 0 },
+    { id: 'paoshuijiu', name: '泡水酒', icon: '🍶', row: 1, col: 1 },
+    { id: 'suancai', name: '酸菜', icon: '🥬', row: 2, col: 0 },
+  ],
+  npcs: [
+    { id: 'elder', name: '长老', role: '长者', preferred: 'tuotuorou', row: 0, col: 0,
+      dialogue: '以前打猎回来，全家人分一块坨坨肉\n就是年。\n\n彝族有句老话——\n"见肉分均，见者有份。"\n无论猎物大小，全村都要分着吃，\n这才是过年的意义：团圆、分享。' },
+    { id: 'bimo', name: '毕摩', role: '祭司', preferred: 'qiaoba', row: 0, col: 1,
+      dialogue: '彝年与十月太阳历息息相关——\n祖先按太阳的脚步，定下过年的日子。\n\n荞粑是我们彝族最古老的食物之一，\n荞麦耐寒耐旱，在高山上茁壮成长，\n象征着彝族人民坚韧不拔的精神。' },
+    { id: 'youth', name: '青年阿依', role: '青年', preferred: 'paoshuijiu', row: 1, col: 0,
+      dialogue: '泡水酒是彝族人待客的最高礼节！\n用荞麦或玉米酿制，发酵后兑水饮用。\n入口清香，回味甘甜，\n在团圆的彝年是最受欢迎的饮品。' },
+    { id: 'child', name: '小阿呷', role: '小孩', preferred: 'kuba', row: 1, col: 1,
+      dialogue: '苦荞是祖先最早种植的作物！\n味道虽苦，却最养人——\n我们彝族人从小就吃苦荞，\n老祖宗说吃得苦中苦，方为人上人呀！' },
+    { id: 'grandma', name: '阿嫫', role: '奶奶', preferred: 'suancai', row: 2, col: 0,
+      dialogue: '彝家酸菜每家每户都会腌制，\n萝卜、青菜晾晒后入坛发酵，\n酸爽开胃，配坨坨肉最是解腻。\n这道菜啊，从我奶奶的奶奶就开始做了~' },
+  ],
+  fed: {},
+  dragging: null, dragEl: null, dragOx: 0, dragOy: 0,
+  moveHandler: null, upHandler: null,
+
+  init() {
+    this.fed = {};
+    document.getElementById('l3Complete').style.display = 'none';
+    document.getElementById('l3Dialogue').style.display = 'none';
+    const table = document.getElementById('l3Table');
+    table.innerHTML = '';
+    const tw = table.clientWidth || table.parentElement.clientWidth - 32 || 400;
+    const th = table.clientHeight || 420;
+    // 动态网格：3行 x 食物左2列 / NPC右2列
+    const rows = 3, rowH = th / rows;
+    const foodColsX = [tw * 0.04, tw * 0.25]; // 食物左两列
+    const npcColsX = [tw * 0.60, tw * 0.80];  // NPC 右两列
+    const foodW = Math.max(60, Math.min(90, tw * 0.18));
+    const slotSize = Math.max(55, Math.min(85, tw * 0.13));
+
+    // 计算食物坐标
+    for (const f of this.foods) {
+      f.x = foodColsX[f.col]; f.y = (f.row + 0.5) * rowH - 22;
+    }
+    // 计算 NPC 坐标
+    for (const n of this.npcs) {
+      n.x = npcColsX[n.col]; n.y = (n.row + 0.5) * rowH - slotSize/2;
+      n.slotSize = slotSize;
+    }
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'position:absolute;top:4px;left:8px;color:#8a7060;font-size:12px;pointer-events:none';
+    hint.textContent = '← 拖动食物到右侧宾客 →';
+    table.appendChild(hint);
+
+    // NPC slots - 右侧
+    for (const n of this.npcs) {
+      const el = document.createElement('div');
+      el.className = 'npc-slot';
+      el.style.cssText = 'left:'+n.x+'px;top:'+n.y+'px;width:'+slotSize+'px;height:'+slotSize+'px;position:absolute';
+      el.id = 'npc_' + n.id; el.innerHTML = n.name + '<div class="npc-role">' + n.role + '</div>';
+      table.appendChild(el);
+    }
+    // Food items - 左侧
+    for (const f of this.foods) {
+      const el = document.createElement('div');
+      el.className = 'food-item';
+      el.style.cssText = 'left:'+f.x+'px;top:'+f.y+'px;width:'+foodW+'px;text-align:center;position:absolute;padding:8px 4px;font-size:clamp(12px,2vw,15px)';
+      el.innerHTML = '<span class="food-icon">' + f.icon + '</span>' + f.name; el.id = 'food_' + f.id;
+      el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); this.startDrag(e, f.id, el); });
+      table.appendChild(el);
+    }
+    // 全局移动和释放（在 document 上确保不丢事件）
+    this.moveHandler = (e) => this.moveDrag(e);
+    this.upHandler = (e) => this.endDrag(e);
+    document.addEventListener('pointermove', this.moveHandler);
+    document.addEventListener('pointerup', this.upHandler);
+  },
+
+  cleanup() {
+    document.removeEventListener('pointermove', this.moveHandler);
+    document.removeEventListener('pointerup', this.upHandler);
+  },
+
+  startDrag(e, foodId, el) {
+    if (this.fed[foodId]) return;
+    this.dragging = foodId; this.dragEl = el;
+    const r = el.getBoundingClientRect();
+    this.dragOx = e.clientX - r.left; this.dragOy = e.clientY - r.top;
+    el.style.zIndex = '99'; el.style.boxShadow = '0 0 20px rgba(212,168,83,.7)'; el.style.transition = 'none';
+  },
+  moveDrag(e) {
+    if (!this.dragging || !this.dragEl) return;
+    const table = document.getElementById('l3Table');
+    const tr = table.getBoundingClientRect();
+    this.dragEl.style.left = (e.clientX - tr.left - this.dragOx) + 'px';
+    this.dragEl.style.top = (e.clientY - tr.top - this.dragOy) + 'px';
+    // 检测悬停高亮
+    const mx = e.clientX - tr.left, my = e.clientY - tr.top;
+    document.querySelectorAll('.npc-slot').forEach(s => s.classList.remove('hover'));
+    for (const n of this.npcs) {
+      const half = (n.slotSize||80)/2;
+      const dx = mx - (n.x+half), dy = my - (n.y+half);
+      if (Math.hypot(dx,dy) < half+5 && !this.fed[this.dragging]) {
+        document.getElementById('npc_'+n.id)?.classList.add('hover');
+      }
+    }
+  },
+  endDrag(e) {
+    if (!this.dragging) return;
+    const table = document.getElementById('l3Table');
+    const tr = table.getBoundingClientRect();
+    const mx = e.clientX - tr.left, my = e.clientY - tr.top;
+    this.dragEl.style.zIndex = ''; this.dragEl.style.boxShadow = '';
+    document.querySelectorAll('.npc-slot').forEach(s => s.classList.remove('hover'));
+    let matched = false;
+    for (const n of this.npcs) {
+      const half = (n.slotSize||80)/2;
+      const dx = mx - (n.x+half), dy = my - (n.y+half);
+      if (Math.hypot(dx,dy) < half+5 && this.dragging && !this.fed[this.dragging]) {
+        this.handleDrop(n.id, this.dragging); matched = true; break;
+      }
+    }
+    const origFood = this.foods.find(f => f.id === this.dragging);
+    if (!matched && origFood) {
+      this.dragEl.style.left = origFood.x + 'px'; this.dragEl.style.top = origFood.y + 'px';
+      this.dragEl.style.transition = 'left .25s, top .25s';
+    }
+    this.dragging = null; this.dragEl = null;
+  },
+
+  handleDrop(npcId, foodId) {
+    const npc = this.npcs.find(n => n.id === npcId);
+    if (!npc || this.fed[foodId]) return;
+    if (foodId !== npc.preferred) {
+      // 错误：食物弹回
+      const origFood = this.foods.find(f => f.id === foodId);
+      if (origFood && this.dragEl) {
+        this.dragEl.style.left = origFood.x + 'px'; this.dragEl.style.top = origFood.y + 'px';
+        this.dragEl.style.transition = 'left .25s, top .25s';
+      }
+      return;
+    }
+    this.fed[foodId] = true;
+    const foodEl = document.getElementById('food_' + foodId);
+    if (foodEl) { foodEl.classList.add('matched'); foodEl.style.pointerEvents = 'none'; }
+    const npcEl = document.getElementById('npc_' + npcId);
+    if (npcEl) { npcEl.classList.add('fulfilled'); npcEl.innerHTML = npc.name + '<div class=\"npc-role\">' + npc.role + '</div>'; }
+    this.showDialogue(npc);
+    Game.achievements.feast = Object.keys(this.fed).length >= 5;
+    if (Game.achievements.feast) {
+      setTimeout(() => { document.getElementById('l3Complete').style.display = ''; }, 3500);
+    }
+  },
+
+  showDialogue(npc) {
+    document.getElementById('l3Speaker').textContent = npc.name + '：';
+    document.getElementById('l3DialogueText').textContent = npc.dialogue;
+    document.getElementById('l3Dialogue').style.display = 'block';
+    clearTimeout(this._dialogueTimer);
+    this._dialogueTimer = setTimeout(() => document.getElementById('l3Dialogue').style.display = 'none', 5000);
+  },
+};
+document.getElementById('l3Dialogue').addEventListener('click', function(){ this.style.display = 'none'; });
+
+// ==================== 结尾画卷 ====================
+const EndingPage = {
+  current: 0,
+  pages: [
+    { title: '三份成就，三份传承',
+      content: '🏆 漆器匠人 — 你用巧手制作了火把节祭品\n🏆 传火使者 — 你点燃了赛道上每一支火把\n🏆 团圆主理人 — 你让彝年宴席上笑声回荡\n\n三份成就全部达成！\n阿诗玛的祝福降临在村寨上空……' },
+    { title: '阿诗玛的祝福',
+      content: '阿诗玛化成的山峰上，\n闪烁出温柔的光芒。\n\n火把节的主篝火比往年都要明亮，\n火焰中仿佛能看到阿诗玛微笑的面容。\n\n她轻声道：\n"我的族人啊，只要你们还记得我，\n火把就永远不会熄灭，\n彝年的团圆就永远温暖。"' },
+    { title: '团圆',
+      content: '村寨的火把节与彝族年，\n在阿诗玛的祝福中真正"团圆"了。\n\n年轻一代传承着手艺，\n在篝火旁聆听长辈的故事，\n在团圆宴上分享祖先的味道。\n\n—— 传承彝族传统文化，\n让每一束火把都照亮回家的路。' },
+  ],
+  show() {
+    const p = this.pages[this.current];
+    document.getElementById('endingTitle').textContent = p.title;
+    document.getElementById('endingContent').textContent = p.content;
+    document.getElementById('endingHint').style.display = this.current < this.pages.length - 1 ? '' : 'none';
+    document.getElementById('endingBtn').style.display = this.current >= this.pages.length - 1 ? '' : 'none';
+  },
+  spawnParticles() {
+    const app = document.getElementById('app');
+    setInterval(() => {
+      const p = document.createElement('div'); p.className = 'particle';
+      p.style.left = (20 + Math.random()*80) + '%'; p.style.top = (40 + Math.random()*50) + '%';
+      p.style.animationDuration = (2 + Math.random()*3) + 's';
+      app.appendChild(p);
+      setTimeout(() => p.remove(), 3000);
+    }, 400);
+  },
+};
+document.getElementById('endingScene').addEventListener('click', () => {
+  if (EndingPage.current < EndingPage.pages.length - 1) {
+    EndingPage.current++; EndingPage.show();
+  }
+});
+
+// ==================== 应用美术资源 ====================
+(function applyArt() {
+  // 主菜单背景
+  if (ART.mainMenuBg) {
+    const url = 'url(' + encodeURI(ART.mainMenuBg) + ')';
+    document.getElementById('mainMenu').style.background = url + ' center/cover no-repeat';
+  }
+  // 关卡1 长老人像
+  if (ART.elderPortrait) {
+    // 在教程面板中插入长老图片
+    const tut = document.getElementById('l1Tutorial');
+    if (tut) {
+      const img = document.createElement('img');
+      img.src = ART.elderPortrait;
+      img.style.cssText = 'width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:block;border:2px solid #d4a853';
+      const h2 = tut.querySelector('h2');
+      if (h2) h2.before(img);
+    }
+  }
+  // 关卡3 餐桌背景
+  if (ART.tableBg) {
+    const t = document.getElementById('l3Table');
+    if (t) { t.style.backgroundImage = 'url('+ART.tableBg+')'; t.style.backgroundSize = 'cover'; }
+  }
+  // 结尾背景
+  if (ART.endingBg) {
+    document.getElementById('endingScene').style.backgroundImage = 'url('+ART.endingBg+')';
+    document.getElementById('endingScene').style.backgroundSize = 'cover';
+  }
+})();
+
+// ==================== 启动 ====================
+document.getElementById('mainMenu').classList.add('active');
+console.log('🔥 传承彝族传统文化 — 唤醒阿诗玛的祝福 — 准备就绪');
+</script>
+</body>
+</html>
