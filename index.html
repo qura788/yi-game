@@ -360,7 +360,7 @@ const Level1 = {
     this.selectedColor = color;
     document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
     el.classList.add('selected');
-    document.getElementById('l1ColorHint').textContent = `已选：${color==='black'?'黑底':color==='red'?'红色':'黄色'}`;
+    document.getElementById('l1ColorHint').textContent = `已选：${color==='black'?'黑底 → 点外圈':color==='red'?'红色 → 点花瓣':'黄色 → 点中心'}`;
   },
 
   startColoring() {
