@@ -566,7 +566,7 @@ const L1Coloring = {
 const Level2 = {
   state: 'pregame', canvas: null, ctx: null,
   player: { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0, jumpCount: 0 },
-  speed: 200, distance: 0, torchesLit: 0, totalTorches: 20, torchTarget: 15, totalDist: 9999, lives: 3, shieldExpiry: 0, shieldsCollected: 0, shieldFlash: 0,
+  speed: 200, distance: 0, torchesLit: 0, totalTorches: 20, torchTarget: 15, totalDist: 9999, lives: 3, shieldExpiry: 0, shieldsCollected: 0, shieldFlash: 0, torchBoost: 0,
   items: [], nightProgress: 0, animId: null, lastTime: 0,
 
   drawUI() {
@@ -576,7 +576,7 @@ const Level2 = {
   },
 
   start() {
-    this.state = "running"; this.distance = 0; this.torchesLit = 0; this.lives = 3; this.shieldExpiry = 0; this.shieldsCollected = 0; this.shieldFlash = 0;
+    this.state = "running"; this.distance = 0; this.torchesLit = 0; this.lives = 3; this.shieldExpiry = 0; this.shieldsCollected = 0; this.shieldFlash = 0; this.torchBoost = 0;
     this.player = { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0, jumpCount: 0 };
     this.nightProgress = 0; this.items = []; this.speed = 200; this.lastTime = performance.now();
     this.canvas = document.getElementById('l2Canvas');
@@ -682,7 +682,7 @@ const Level2 = {
           if (d < 5 && d < nearestDist) { nearest = item; nearestDist = d; }
         }
         if (nearest) {
-          nearest.lit = true; this.torchesLit++; Audio.playTorchLight();
+          nearest.lit = true; this.torchesLit++; this.torchBoost = 1; Audio.playTorchLight();
           document.getElementById("l2TorchCount").textContent = "🔥 " + this.torchesLit + "/" + this.torchTarget;
         }
       }
@@ -705,7 +705,7 @@ const Level2 = {
             const d = Math.abs(item.dist-this.distance);
             if (d<5&&d<nd){nearest=item;nd=d;}
           }
-          if(nearest){nearest.lit=true;this.torchesLit++; Audio.playTorchLight();
+          if(nearest){nearest.lit=true;this.torchesLit++; this.torchBoost = 1; Audio.playTorchLight();
             document.getElementById('l2TorchCount').textContent='🔥 '+this.torchesLit+'/'+this.totalTorches;}
           e.preventDefault();
         } break;
@@ -736,6 +736,8 @@ const Level2 = {
     }
 
     // 护盾计时（基于绝对时间戳，不受帧率影响）
+    // 火炬加速计时
+    if (this.torchBoost > 0) { this.torchBoost -= dt; this.speed = 320; if (this.torchBoost <= 0) this.speed = 200; }
     // 碰撞检测 & 道具收集（X+Y 轴精确重叠）
     const SCALE = 3.5;
     const PX_REF = 100;
@@ -972,7 +974,7 @@ const Level2 = {
     // 自动点亮附近经过的火把
     for (const item of this.items) {
       if (item.type === 'torch' && !item.lit && item.dist <= this.distance && (this.distance - item.dist) < 4) {
-        item.lit = true; this.torchesLit++;
+        item.lit = true; this.torchesLit++; this.torchBoost = 1; Audio.playTorchLight();
         document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
       }
     }
