@@ -93,10 +93,9 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
 /* 彩色纸屑 */
 .particle-confetti{position:absolute;pointer-events:none; animation:confetti-fall 3s ease-in forwards;}
 @keyframes confetti-fall{0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(350px) rotate(720deg)}}
-/* 星光 */
-@keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0deg)} 50%{opacity:1;transform:scale(1) rotate(180deg)}}
-.particle-sparkle{position:absolute;pointer-events:none; animation:sparkle 1.8s ease-in-out infinite;}
-.particle-sparkle::before{content:'✦';display:block;font-size:12px;color:#f0d060;text-shadow:0 0 6px rgba(240,208,96,.8);}
+/* 火焰圈粒子 */
+@keyframes ember-flicker{0%{opacity:1;transform:translateY(0) scale(1)} 50%{opacity:.6;transform:translateY(-30px) translateX(8px) scale(.5)} 100%{opacity:0;transform:translateY(-70px) translateX(-8px) scale(0)}}
+.particle-ember{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none; animation:ember-flicker 1.5s ease-out forwards; box-shadow:0 0 12px 4px rgba(255,80,0,.7);}
 </style>
 </head>
 <body>
@@ -320,7 +319,7 @@ const Game = {
     Game.achievements.lacquerware = true; Game.achievements.torch = true; Game.achievements.feast = true;
     this.show('endingScene');
     EndingPage.spawnParticles();
-    setTimeout(() => sparkleCard('endingCard'), 200);
+    setTimeout(() => fireRing('endingCard'), 200);
   },
   backToMenu() { this.show('mainMenu'); }
 };
@@ -393,6 +392,7 @@ const Level1 = {
   finishColoring(score) {
     document.getElementById('l1ColoringPhase').style.display = 'none';
     document.getElementById('l1Review').style.display = '';
+    fireRing('l1Review');
     const total = this.carvingScore + score;
     let comment = total >= 90 ? '太棒了！这件漆器做得比我还好！' : total >= 60 ? '不错，第一次就能做成这样，很有天赋。' : '还需多加练习，但心意到了就好。';
     document.getElementById('l1ReviewText').textContent = `${comment}\n\n雕刻得分：${this.carvingScore} 分\n上色得分：${score} 分\n总分：${total} 分\n\n━━━━━━━━━━━━\n📖 关于彝族漆器\n\n彝族漆器髹饰技艺是国家级非物质文化遗产，\n已有1700多年历史。\n\n漆器以木、皮、角等为胎，髹以生漆，\n黑红黄三色交错，瑰丽庄重。\n\n\"黑为底\"象征大地与庄重，\n\"红为艳\"代表火焰与热情，\n\"黄为亮\"喻示太阳与光明——\n三色交织，便是彝人对天地的理解。`;
@@ -1141,7 +1141,7 @@ const Level2 = {
       document.getElementById("l2Game").style.display = "none";
       document.getElementById("l2Knowledge").style.display = "";
       document.getElementById("l2Complete").style.display = "none";
-      sparkleCard("l2Knowledge");
+      fireRing("l2Knowledge");
     } else {
       document.getElementById("l2CompleteTitle").textContent = "比赛结束";
       document.getElementById("l2CompleteText").textContent = ["点燃了 "+this.torchesLit+"/"+this.torchTarget+" 个火把","跑了 "+Math.floor(this.distance)+"m","❤️ 剩余生命："+this.lives].join("\n");
@@ -1344,7 +1344,7 @@ const Level3 = {
       document.getElementById("l3Game").style.display = "none";
       document.getElementById("l3Knowledge").style.display = "";
       document.getElementById("l3Complete").style.display = "none";
-      sparkleCard("l3Knowledge");
+      fireRing("l3Knowledge");
     }
   },
 
@@ -1413,28 +1413,34 @@ const EndingPage = {
   },
 };
 
-// 知识卡片周围星光效果
-function sparkleCard(cardId) {
+// 知识卡片火焰圈特效
+function fireRing(cardId) {
   const card = document.getElementById(cardId);
   if (!card) return;
+  const colors = ['#ff4400','#ff6600','#ff9922','#f0d060','#cc3300'];
   const rect = card.getBoundingClientRect();
   const parent = card.parentElement;
   const appRect = document.getElementById('app').getBoundingClientRect();
-  for (let i = 0; i < 50; i++) {
+  const cx = rect.left - appRect.left + rect.width / 2;
+  const cy = rect.top - appRect.top + rect.height / 2;
+  const rx = rect.width / 2 + 15;
+  const ry = rect.height / 2 + 15;
+  for (let i = 0; i < 60; i++) {
     setTimeout(() => {
-      const s = document.createElement('div'); s.className = 'particle-sparkle';
-      const side = Math.random();
-      let l, t;
-      if (side < 0.25) { l = rect.left - appRect.left - 5; t = rect.top - appRect.top + Math.random() * rect.height; }
-      else if (side < 0.5) { l = rect.left - appRect.left + rect.width + 5; t = rect.top - appRect.top + Math.random() * rect.height; }
-      else if (side < 0.75) { l = rect.left - appRect.left + Math.random() * rect.width; t = rect.top - appRect.top - 5; }
-      else { l = rect.left - appRect.left + Math.random() * rect.width; t = rect.top - appRect.top + rect.height + 5; }
-      s.style.left = l + 'px'; s.style.top = t + 'px';
-      s.style.animationDuration = (1.2 + Math.random() * 2) + 's';
-      s.style.animationDelay = Math.random() * 0.8 + 's';
-      parent.appendChild(s);
-      setTimeout(() => s.remove(), 2500);
-    }, i * 40);
+      const e = document.createElement('div'); e.className = 'particle-ember';
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 0.7 + Math.random() * 0.3;
+      const l = cx + Math.cos(angle) * rx * dist + (Math.random() - 0.5) * 30;
+      const t = cy + Math.sin(angle) * ry * dist + (Math.random() - 0.5) * 20;
+      e.style.left = l + 'px'; e.style.top = t + 'px';
+      e.style.background = colors[Math.floor(Math.random() * colors.length)];
+      e.style.width = (4 + Math.random() * 10) + 'px';
+      e.style.height = (4 + Math.random() * 10) + 'px';
+      e.style.animationDuration = (1 + Math.random() * 1.5) + 's';
+      e.style.animationDelay = Math.random() * 0.5 + 's';
+      parent.appendChild(e);
+      setTimeout(() => e.remove(), 2000);
+    }, i * 30);
   }
 }
 
@@ -1607,8 +1613,12 @@ const Audio = {
   playButtonClick() { this.note(660, 0, 0.05, 0.05, 'sine'); },
 };
 
-// 主菜单音乐自动启动（需用户首次点击触发）
-document.addEventListener('click', () => { Audio.init(); if (!Audio._started) { Audio._started = true; } }, { once: true });
+// 主菜单音乐自动启动 + 按钮音效
+document.addEventListener('click', (e) => {
+  Audio.init();
+  if (!Audio._started) { Audio._started = true; }
+  if (e.target.closest('.btn')) Audio.playButtonClick();
+});
 
 // ==================== 启动 ====================
 document.getElementById('mainMenu').classList.add('active');
