@@ -657,34 +657,37 @@ const Level2 = {
   },
 
   bindInput() {
-    let sx = 0, sy = 0, moved = false;
+    let sx = 0, sy = 0, fired = false;
     const c = this.canvas;
-    c.onpointerdown = (e) => { sx = e.clientX; sy = e.clientY; moved = false; };
+    c.onpointerdown = (e) => { sx = e.clientX; sy = e.clientY; fired = false; };
     c.onpointermove = (e) => {
-      if (Math.abs(e.clientX-sx) > 3 || Math.abs(e.clientY-sy) > 3) moved = true;
+      if (fired) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10) {
+        if (dy < -10 && this.player.jumpCount < 2) {
+          this.player.jumping = true; this.player.vy = this.player.jumpCount === 0 ? 7.5 : 5.5; this.player.jumpCount++; Audio.playJump(); fired = true;
+        } else if (dy > 10 && !this.player.jumping) {
+          this.player.ducking = true; Audio.playDuck(); setTimeout(()=>this.player.ducking=false, 600); fired = true;
+        }
+      }
     };
     c.onpointerup = (e) => {
+      if (fired) return;
       const dx = e.clientX - sx, dy = e.clientY - sy;
-      if (!moved && Math.abs(dx) < 10 && Math.abs(dy) < 10) {
-        // Tap: light the nearest torch within 20m
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
         let nearest = null, nearestDist = Infinity;
         for (const item of this.items) {
-          if (item.type !== 'torch' || item.lit) continue;
+          if (item.type !== "torch" || item.lit) continue;
           const d = Math.abs(item.dist - this.distance);
           if (d < 5 && d < nearestDist) { nearest = item; nearestDist = d; }
         }
         if (nearest) {
           nearest.lit = true; this.torchesLit++; Audio.playTorchLight();
-          document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
+          document.getElementById("l2TorchCount").textContent = "🔥 " + this.torchesLit + "/" + this.torchTarget;
         }
-      } else if (Math.abs(dy) > Math.abs(dx)) {
-        if (dy < -18 && this.player.jumpCount < 2) { this.player.jumping = true; this.player.vy = this.player.jumpCount === 0 ? 7.5 : 5.5; this.player.jumpCount++; Audio.playJump(); }
-        else if (dy > 18 && !this.player.jumping) { this.player.ducking = true; Audio.playDuck(); setTimeout(()=>this.player.ducking=false, 600); }
-      } else {
-        // 单跑道，无左右移动
       }
     };
-    // 键盘操控
+// 键盘操控
     this._keyHandler = (e) => {
       if (this.state !== 'running' && this.state !== 'paused') return;
       if (e.key === 'Escape' || (e.key === ' ' && this.state === 'paused')) {
