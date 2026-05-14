@@ -374,7 +374,7 @@ const Level1 = {
     document.getElementById('l1Review').style.display = '';
     const total = this.carvingScore + score;
     let comment = total >= 90 ? '太棒了！这件漆器做得比我还好！' : total >= 60 ? '不错，第一次就能做成这样，很有天赋。' : '还需多加练习，但心意到了就好。';
-    document.getElementById('l1ReviewText').textContent = `${comment}\n\n雕刻得分：${this.carvingScore} 分\n上色得分：${score} 分\n总分：${total} 分`;
+    document.getElementById('l1ReviewText').textContent = `${comment}\n\n雕刻得分：${this.carvingScore} 分\n上色得分：${score} 分\n总分：${total} 分\n\n━━━━━━━━━━━━\n📖 关于彝族漆器\n\n彝族漆器髹饰技艺是国家级非物质文化遗产，\n已有1700多年历史。\n\n漆器以木、皮、角等为胎，髹以生漆，\n黑红黄三色交错，瑰丽庄重。\n\n\"黑为底\"象征大地与庄重，\n\"红为艳\"代表火焰与热情，\n\"黄为亮\"喻示太阳与光明——\n三色交织，便是彝人对天地的理解。`;
     Game.achievements.lacquerware = true;
   }
 };
