@@ -221,9 +221,12 @@ const ART = {
   playerSprite: 'art/跑酷人物.png',
   bgVillage: 'art/背景图.png',
   torchImg: 'art/火把_25x45_透明底.png',
-  fenceImg: '',         // 例: 'art/fence.png' 栅栏（约50x35）
-  potImg: '',           // 例: 'art/pot.png' 陶罐（约30x30）
-  lowFrameImg: '',      // 例: 'art/low-frame.png' 低矮竹架（约60x20）
+  jump1Img: 'art/跳一下.png',
+  jump2Img: 'art/两连跳.png',
+  duckImg: 'art/蹲下中.png',
+  fenceImg: 'art/栅栏.png',
+  potImg: 'art/陶罐.png',
+  lowFrameImg: 'art/低矮竹架.png',
   // 关卡3 团圆宴
   tableBg: 'art/彝族餐桌.png',
   foodImgs: {},         // 例: { tuotuorou:'art/meat.png', qiaoba:'art/cake.png', ... }
@@ -562,7 +565,7 @@ const L1Coloring = {
 // ==================== 关卡2：火把节跑酷 ====================
 const Level2 = {
   state: 'pregame', canvas: null, ctx: null,
-  player: { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0 },
+  player: { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0, jumpCount: 0 },
   speed: 200, distance: 0, torchesLit: 0, totalTorches: 20, torchTarget: 15, totalDist: 9999, lives: 3, shieldExpiry: 0, shieldsCollected: 0, shieldFlash: 0,
   items: [], nightProgress: 0, animId: null, lastTime: 0,
 
@@ -574,7 +577,7 @@ const Level2 = {
 
   start() {
     this.state = "running"; this.distance = 0; this.torchesLit = 0; this.lives = 3; this.shieldExpiry = 0; this.shieldsCollected = 0; this.shieldFlash = 0;
-    this.player = { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0 };
+    this.player = { y: 0, vy: 0, jumping: false, ducking: false, invincible: 0, jumpCount: 0 };
     this.nightProgress = 0; this.items = []; this.speed = 200; this.lastTime = performance.now();
     this.canvas = document.getElementById('l2Canvas');
     this.ctx = this.canvas.getContext('2d');
@@ -584,6 +587,9 @@ const Level2 = {
     };
     loadImg('playerSprite', 'player');
     loadImg('torchImg', 'torch');
+    loadImg('jump1Img', 'jump1');
+    loadImg('jump2Img', 'jump2');
+    loadImg('duckImg', 'duck');
     loadImg('fenceImg', 'fence');
     loadImg('potImg', 'pot');
     loadImg('lowFrameImg', 'low');
@@ -672,7 +678,7 @@ const Level2 = {
           document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
         }
       } else if (Math.abs(dy) > Math.abs(dx)) {
-        if (dy < -18 && !this.player.jumping) { this.player.jumping = true; this.player.vy = 7.5; Audio.playJump(); }
+        if (dy < -18 && this.player.jumpCount < 2) { this.player.jumping = true; this.player.vy = this.player.jumpCount === 0 ? 7.5 : 5.5; this.player.jumpCount++; Audio.playJump(); }
         else if (dy > 18 && !this.player.jumping) { this.player.ducking = true; Audio.playDuck(); setTimeout(()=>this.player.ducking=false, 600); }
       } else {
         // 单跑道，无左右移动
@@ -687,7 +693,7 @@ const Level2 = {
       }
       if (this.state !== 'running') return;
       switch(e.key) {
-        case 'ArrowUp': case 'w': if(!this.player.jumping){this.player.jumping=true;this.player.vy=7.5;} e.preventDefault(); break;
+        case 'ArrowUp': case 'w': if(this.player.jumpCount<2){this.player.jumping=true;this.player.vy=this.player.jumpCount===0?7.5:5.5;this.player.jumpCount++;Audio.playJump();} e.preventDefault(); break;
         case 'ArrowDown': case 's': if(!this.player.jumping){this.player.ducking=true;} e.preventDefault(); break;
         case ' ': {
           let nearest = null, nd = Infinity;
@@ -723,7 +729,7 @@ const Level2 = {
     if (this.player.jumping) {
       this.player.y += this.player.vy * 60 * dt;
       this.player.vy -= 16 * dt;
-      if (this.player.y <= 0) { this.player.y = 0; this.player.jumping = false; this.player.vy = 0; }
+      if (this.player.y <= 0) { this.player.y = 0; this.player.jumping = false; this.player.vy = 0; this.player.jumpCount = 0; }
     }
 
     // 护盾计时（基于绝对时间戳，不受帧率影响）
@@ -795,7 +801,7 @@ const Level2 = {
     this.nightProgress = Math.min(1, this.distance / this.totalDist);
     this.updateHUD();
     this.render();
-    if (this.torchesLit >= this.torchTarget) { this.finish(); return; }
+    if (this.torchesLit >= this.torchTarget) { Audio.playVictoryMusic(); this.finish(); return; }
     this.animId = requestAnimationFrame((t) => this.loop(t));
   },
 
@@ -929,9 +935,16 @@ const Level2 = {
     const py = h - 55 - this.player.y;
     if (this.player.invincible <= 0 || Math.floor(this.player.invincible*12)%2===0) {
       if (this.sprites.player && this.sprites.player.complete) {
-        const pw = this.player.ducking ? 28 : 26;
-        const ph = this.player.ducking ? 28 : this.player.jumping ? 42 : 48;
-        ctx.drawImage(this.sprites.player, px-pw/2, py-ph, pw, ph);
+        let sprite = this.sprites.player;
+        let pw = 36, ph = 48;
+        if (this.player.ducking && this.sprites.duck && this.sprites.duck.complete) {
+          sprite = this.sprites.duck; pw = 39; ph = 28;
+        } else if (this.player.jumping && this.player.jumpCount >= 2 && this.sprites.jump2 && this.sprites.jump2.complete) {
+          sprite = this.sprites.jump2; pw = 36; ph = 42;
+        } else if (this.player.jumping && this.sprites.jump1 && this.sprites.jump1.complete) {
+          sprite = this.sprites.jump1; pw = 36; ph = 42;
+        }
+        ctx.drawImage(sprite, px-pw/2, py-ph, pw, ph);
         if (performance.now() < this.shieldExpiry) {
           const pulse = 1 + 0.4 * Math.sin(performance.now()/150);
           ctx.strokeStyle = 'rgba(100,180,255,' + (0.6 + 0.3*Math.sin(performance.now()/200)) + ')';
@@ -1316,12 +1329,9 @@ const Audio = {
   playVictoryMusic() {
     this.stopMusic();
     this.init();
-    const fanfare = [392, 440, 523, 659, 784, 1047]; // G A C E G C 上行五音
-    fanfare.forEach((f, i) => {
-      this.note(f, i * 0.15, 0.3, 0.1, 'triangle');
-      this.note(f * 0.5, i * 0.15, 0.4, 0.05, 'sine');
-    });
-    this.note(1047, fanfare.length * 0.15, 1.0, 0.1, 'triangle');
+    var melody = [{f:392,d:0.12},{f:330,d:0.12},{f:392,d:0.12},{f:523,d:0.25},{f:659,d:0.25},{f:784,d:0.25},{f:1047,d:0.6}];
+    var t=0;
+    melody.forEach(function(n){this.note(n.f,t,n.d,0.1,"square");this.note(n.f*0.5,t,n.d,0.04,"triangle");t+=n.d;}.bind(this));
   },
 
   stopMusic() {
