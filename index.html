@@ -278,7 +278,7 @@ const Game = {
     this.show('endingScene');
     EndingPage.spawnParticles();
   },
-  backToMenu() { this.show('mainMenu'); }
+  backToMenu() { Audio.playMainMenuMusic(); this.show('mainMenu'); }
 };
 
 // ==================== 开场画卷 ====================
@@ -591,6 +591,7 @@ const Level2 = {
     document.getElementById('l2PauseBtn').textContent = '⏸ 暂停';
     this.generateItems();
     this.bindInput();
+    Audio.playLevel2Music();
     this.drawUI();
     // 先画加载提示
     this.ctx.fillStyle = '#1a1410'; this.ctx.fillRect(0, 0, 460, 340);
@@ -668,12 +669,12 @@ const Level2 = {
           if (d < 5 && d < nearestDist) { nearest = item; nearestDist = d; }
         }
         if (nearest) {
-          nearest.lit = true; this.torchesLit++;
+          nearest.lit = true; this.torchesLit++; Audio.playTorchLight();
           document.getElementById('l2TorchCount').textContent = '🔥 ' + this.torchesLit + '/' + this.torchTarget;
         }
       } else if (Math.abs(dy) > Math.abs(dx)) {
-        if (dy < -18 && !this.player.jumping) { this.player.jumping = true; this.player.vy = 7.5; }
-        else if (dy > 18 && !this.player.jumping) { this.player.ducking = true; setTimeout(()=>this.player.ducking=false, 600); }
+        if (dy < -18 && !this.player.jumping) { this.player.jumping = true; this.player.vy = 7.5; Audio.playJump(); }
+        else if (dy > 18 && !this.player.jumping) { this.player.ducking = true; Audio.playDuck(); setTimeout(()=>this.player.ducking=false, 600); }
       } else {
         // 单跑道，无左右移动
       }
@@ -696,7 +697,7 @@ const Level2 = {
             const d = Math.abs(item.dist-this.distance);
             if (d<5&&d<nd){nearest=item;nd=d;}
           }
-          if(nearest){nearest.lit=true;this.torchesLit++;
+          if(nearest){nearest.lit=true;this.torchesLit++; Audio.playTorchLight();
             document.getElementById('l2TorchCount').textContent='🔥 '+this.torchesLit+'/'+this.totalTorches;}
           e.preventDefault();
         } break;
@@ -770,7 +771,7 @@ const Level2 = {
       if (item.type === 'shield' && !item.collected) {
         item.collected = true;
         this.shieldExpiry = performance.now() + 3000;
-        this.shieldsCollected++;
+        this.shieldsCollected++; Audio.playShieldPickup();
         this.shieldFlash = 0.5;
         continue;
       }
@@ -783,6 +784,7 @@ const Level2 = {
       if (!yOverlap) continue; // 跳得够高或蹲得够低，Y 轴无重叠 → 闪避成功
 
       // 撞到障碍：扣一条命
+      Audio.playHit();
       this.lives--;
       this.player.invincible = 2;
       this.speed = 120;
@@ -794,7 +796,7 @@ const Level2 = {
     this.nightProgress = Math.min(1, this.distance / this.totalDist);
     this.updateHUD();
     this.render();
-    if (this.torchesLit >= this.torchTarget) { this.finish(); return; }
+    if (this.torchesLit >= this.torchTarget) { Audio.playVictoryMusic(); this.finish(); return; }
     this.animId = requestAnimationFrame((t) => this.loop(t));
   },
 
@@ -815,7 +817,7 @@ const Level2 = {
       gameOver() {
     this.state = 'over'; cancelAnimationFrame(this.animId);
     document.getElementById('l2PauseBtn').style.display = 'none';
-    document.getElementById('l2CompleteTitle').textContent = '💔 你倒下了……';
+    document.getElementById('l2CompleteTitle').textContent = '💔 你倒下了……'; Audio.playHit(); setTimeout(() => Audio.playMainMenuMusic(), 2000);
     document.getElementById('l2CompleteText').textContent =
       '点燃了 ' + this.torchesLit + '/' + this.torchTarget + ' 个火把\n跑了 ' + Math.floor(this.distance) + 'm\n\n村民将你扶起，递来一碗泡水酒——\n"休息一下，再来一次吧，年轻人。"';
     if (this.torchesLit >= this.torchTarget) Game.achievements.torch = true;
@@ -1007,6 +1009,7 @@ const Level3 = {
 
   init() {
     this.fed = {};
+    Audio.playLevel3Music();
     document.getElementById('l3Complete').style.display = 'none';
     document.getElementById('l3Dialogue').style.display = 'none';
     const table = document.getElementById('l3Table');
@@ -1123,14 +1126,14 @@ const Level3 = {
       }
       return;
     }
-    this.fed[foodId] = true;
+    this.fed[foodId] = true; Audio.playFoodMatch();
     const foodEl = document.getElementById('food_' + foodId);
     if (foodEl) { foodEl.classList.add('matched'); foodEl.style.pointerEvents = 'none'; }
     const npcEl = document.getElementById('npc_' + npcId);
     if (npcEl) { npcEl.classList.add('fulfilled'); npcEl.innerHTML = npc.name + '<div class=\"npc-role\">' + npc.role + '</div>'; }
     this.showDialogue(npc);
     Game.achievements.feast = Object.keys(this.fed).length >= 5;
-    if (Game.achievements.feast) {
+    if (Game.achievements.feast) { Audio.playFeastComplete();
       setTimeout(() => { document.getElementById('l3Complete').style.display = ''; }, 3500);
     }
   },
@@ -1211,8 +1214,146 @@ document.getElementById('endingScene').addEventListener('click', () => {
   }
 })();
 
+// ==================== 音频系统 ====================
+const Audio = {
+  ctx: null,
+  musicGain: null, musicOscs: [], musicTimer: null,
+
+  init() {
+    if (this.ctx) return;
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.musicGain = this.ctx.createGain();
+    this.musicGain.gain.value = 0.12;
+    this.musicGain.connect(this.ctx.destination);
+  },
+
+  // 播放音符
+  note(freq, start, dur, vol=0.15, type='sine') {
+    this.init();
+    const t = this.ctx.currentTime + start;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(gain); gain.connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + dur);
+  },
+
+  // 噪声（打击音效）
+  noise(start, dur, vol=0.08) {
+    this.init();
+    const t = this.ctx.currentTime + start;
+    const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/data.length, 2);
+    const src = this.ctx.createBufferSource();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+    src.buffer = buf;
+    filter.type = 'highpass'; filter.frequency.value = 800;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    src.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+    src.start(t);
+  },
+
+  // ====== 音乐 ======
+  playMainMenuMusic() {
+    this.stopMusic();
+    this.init();
+    const notes = [262, 330, 392, 440, 523, 440, 392, 330]; // C E G A C A G E 五声音阶
+    const self = this;
+    function loop() {
+      const t = self.ctx.currentTime;
+      notes.forEach((f, i) => {
+        self.note(f, i * 0.5, 0.4, 0.06, 'triangle');
+        if (i % 2 === 0) self.note(f * 0.5, i * 0.5, 0.5, 0.03, 'sine');
+      });
+      self.musicTimer = setTimeout(loop, notes.length * 500 + 1000);
+    }
+    loop();
+  },
+
+  playLevel2Music() {
+    this.stopMusic();
+    this.init();
+    // 奔跑节奏鼓点
+    const self = this;
+    let beat = 0;
+    const melody = [392, 392, 440, 392, 523, 440, 392, 330]; // G G A G C A G E
+    function loop() {
+      const t = self.ctx.currentTime;
+      // 鼓点
+      self.noise(0, 0.06, 0.06);
+      self.noise(0.25, 0.04, 0.04);
+      self.noise(0.5, 0.06, 0.06);
+      self.noise(0.75, 0.04, 0.04);
+      // 旋律点缀
+      if (beat % 4 === 0) self.note(melody[beat % melody.length], 0, 0.3, 0.04, 'triangle');
+      if (beat % 8 === 4) self.note(melody[beat % melody.length] * 0.5, 0, 0.5, 0.03, 'sine');
+      beat++;
+      self.musicTimer = setTimeout(loop, 1000);
+    }
+    loop();
+  },
+
+  playLevel3Music() {
+    this.stopMusic();
+    this.init();
+    // 温馨团圆感 — 慢节奏五音旋律
+    const notes = [392, 330, 262, 330, 392, 440, 392, 330, 262, 294, 330, 392];
+    const self = this;
+    let idx = 0;
+    function loop() {
+      const t = self.ctx.currentTime;
+      self.note(notes[idx], 0, 0.7, 0.05, 'triangle');
+      self.note(notes[idx] * 0.5, 0, 0.8, 0.03, 'sine');
+      idx = (idx + 1) % notes.length;
+      self.musicTimer = setTimeout(loop, 900);
+    }
+    loop();
+  },
+
+  playVictoryMusic() {
+    this.stopMusic();
+    this.init();
+    const fanfare = [392, 440, 523, 659, 784, 1047]; // G A C E G C 上行五音
+    fanfare.forEach((f, i) => {
+      this.note(f, i * 0.15, 0.3, 0.1, 'triangle');
+      this.note(f * 0.5, i * 0.15, 0.4, 0.05, 'sine');
+    });
+    this.note(1047, fanfare.length * 0.15, 1.0, 0.1, 'triangle');
+  },
+
+  stopMusic() {
+    clearTimeout(this.musicTimer);
+    this.musicTimer = null;
+  },
+
+  // ====== 音效 ======
+  playJump() { this.note(440, 0, 0.08, 0.08, 'square'); this.note(660, 0.04, 0.06, 0.06, 'square'); },
+  playDuck() { this.note(220, 0, 0.1, 0.06, 'triangle'); this.noise(0, 0.06, 0.03); },
+  playTorchLight() { this.note(880, 0, 0.1, 0.1, 'sine'); this.note(1320, 0.06, 0.08, 0.06, 'sine'); },
+  playShieldPickup() {
+    [523, 659, 784, 1047].forEach((f, i) => this.note(f, i * 0.08, 0.15, 0.07, 'triangle'));
+  },
+  playHit() {
+    this.noise(0, 0.15, 0.15);
+    this.note(80, 0, 0.2, 0.12, 'sawtooth');
+  },
+  playFoodMatch() { this.note(523, 0, 0.15, 0.08, 'sine'); this.note(659, 0.1, 0.12, 0.06, 'sine'); },
+  playFeastComplete() {
+    [523, 659, 784, 880, 1047].forEach((f, i) => this.note(f, i * 0.12, 0.2, 0.08, 'triangle'));
+  },
+  playButtonClick() { this.note(660, 0, 0.05, 0.05, 'sine'); },
+};
+
+// 主菜单音乐自动启动（需用户首次点击触发）
+document.addEventListener('click', () => { Audio.init(); if (!Audio._started) { Audio._started = true; } }, { once: true });
+
 // ==================== 启动 ====================
-document.getElementById('mainMenu').classList.add('active');
+document.getElementById('mainMenu').classList.add('active'); Audio.playMainMenuMusic();
 console.log('🔥 传承彝族传统文化 — 唤醒阿诗玛的祝福 — 准备就绪');
 </script>
 </body>
