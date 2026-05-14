@@ -539,7 +539,7 @@ const L1Coloring = {
         if (z.filled) continue;
         if (Math.hypot(mx-z.cx, my-z.cy) <= z.r + 8) { hit = z; break; }
       }
-      if (!hit) { this.blackZoneHit++; if (this.blackZoneHit <= 2) { const elder = document.getElementById("l1ElderBubble"); elder.style.display = ""; elder.textContent = "长老：黑为底，这里不能上色哦"; setTimeout(() => elder.style.display = "none", 1500); } return; }
+      if (!hit) { this.blackZoneHit++; if (this.blackZoneHit <= 3) { const elder = document.getElementById("l1ElderBubble"); elder.style.display = ""; elder.textContent = "长老：黑为底，这里不能上色哦"; setTimeout(() => elder.style.display = "none", 1500); } return; }
       if (Level1.selectedColor !== hit.correct) {
         const elder = document.getElementById('l1ElderBubble');
         elder.style.display = ''; elder.textContent = hit.correct==='red'?'长老：火焰要用红色才够热烈哦':'长老：太阳中心要用黄色才够明亮哦';
