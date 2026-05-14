@@ -509,15 +509,20 @@ const L1Coloring = {
     this.canvas = document.getElementById('l1ColoringCanvas');
     this.ctx = this.canvas.getContext('2d');
     const cx = 170, cy = 170;
-    this.zones = [
-      {id:'center', cx, cy, r:42, correct:'yellow', filled:false},
-      {id:'r0', cx:cx+55, cy, r:28, correct:'red', filled:false},
-      {id:'r1', cx:cx+27, cy:cy+48, r:28, correct:'red', filled:false},
-      {id:'r2', cx:cx-27, cy:cy+48, r:28, correct:'red', filled:false},
-      {id:'r3', cx:cx-55, cy, r:28, correct:'red', filled:false},
-      {id:'r4', cx:cx-27, cy:cy-48, r:28, correct:'red', filled:false},
-      {id:'r5', cx:cx+27, cy:cy-48, r:28, correct:'red', filled:false},
-    ];
+    this.zones = [];
+    this.zones.push({id:"center", cx, cy, r:38, correct:"yellow", filled:false});
+    for (let p = 0; p < 8; p++) {
+      const a = (p / 8) * Math.PI * 2 - Math.PI / 2;
+      const dx = Math.cos(a), dy = Math.sin(a);
+      this.zones.push({id:"p"+p+"_0", cx:cx+dx*38, cy:cy+dy*38, r:22, correct:"red", filled:false});
+      this.zones.push({id:"p"+p+"_1", cx:cx+dx*60, cy:cy+dy*60, r:20, correct:"red", filled:false});
+      this.zones.push({id:"p"+p+"_2", cx:cx+dx*78, cy:cy+dy*78, r:15, correct:"red", filled:false});
+    }
+    this.petalGroups = [];
+    for (let p = 0; p < 8; p++) {
+      this.petalGroups.push(["p"+p+"_0", "p"+p+"_1", "p"+p+"_2"]);
+    }
+    this.blackZoneHit = 0;
     // 加载漆器底图
     if (ART.woodBaseImg) {
       this.woodImg = new Image();
@@ -534,7 +539,7 @@ const L1Coloring = {
         if (z.filled) continue;
         if (Math.hypot(mx-z.cx, my-z.cy) <= z.r + 8) { hit = z; break; }
       }
-      if (!hit) return;
+      if (!hit) { this.blackZoneHit++; if (this.blackZoneHit <= 2) { const elder = document.getElementById("l1ElderBubble"); elder.style.display = ""; elder.textContent = "长老：黑为底，这里不能上色哦"; setTimeout(() => elder.style.display = "none", 1500); } return; }
       if (Level1.selectedColor !== hit.correct) {
         const elder = document.getElementById('l1ElderBubble');
         elder.style.display = ''; elder.textContent = hit.correct==='red'?'长老：火焰要用红色才够热烈哦':'长老：太阳中心要用黄色才够明亮哦';
@@ -542,18 +547,31 @@ const L1Coloring = {
         return;
       }
       hit.filled = true;
+      // 同一瓣的所有子区域一起标记
+      for (const grp of this.petalGroups) {
+        if (grp.includes(hit.id)) {
+          for (const zid of grp) {
+            const z = this.zones.find(z=>z.id===zid);
+            if (z && !z.filled) z.filled = true;
+          }
+          break;
+        }
+      }
       const cmap = {red:'#c8322a', yellow:'#d4a853', black:'#1a1a1a'};
       this.ctx.fillStyle = cmap[Level1.selectedColor];
       this.ctx.beginPath(); this.ctx.arc(hit.cx, hit.cy, hit.r-2, 0, Math.PI*2); this.ctx.fill();
       document.getElementById('l1ColorHint').textContent = '已选：' + (Level1.selectedColor==='red'?'红色':'黄色');
-      if (this.zones.every(z=>z.filled)) {
+      const petalDone = this.petalGroups.filter(g => g.every(zid => this.zones.find(z=>z.id===zid).filled)).length;
+      const centerDone = this.zones.find(z=>z.id==="center").filled;
+      const allDone = centerDone && petalDone >= 8;
+      if (allDone) {
         // 替换为成品图
         if (ART.lacquerwareDoneImg) {
           const doneImg = new Image();
           doneImg.onload = () => { this.ctx.clearRect(0,0,340,340); this.ctx.drawImage(doneImg, 0, 0, 340, 340); };
           doneImg.src = ART.lacquerwareDoneImg;
         }
-        const score = Math.round((this.zones.filter(z=>z.filled).length/this.zones.length)*100);
+        const score = centerDone ? Math.round(50 + (petalDone / 8) * 50) : Math.round((petalDone / 8) * 50);
         setTimeout(() => Level1.finishColoring(score), 2500);
       }
     };
