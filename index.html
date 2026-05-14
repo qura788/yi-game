@@ -657,6 +657,25 @@ const L1Coloring = {
       ctx.beginPath(); ctx.arc(centerZ.cx, centerZ.cy, centerZ.r+4, 0, Math.PI*2); ctx.stroke();
       ctx.setLineDash([]);
     }
+
+    // 渲染已填色区域（让颜色保留不消失）
+    const cmap = {red:'#c8322a', yellow:'#d4a853', black:'#1a1a1a'};
+    // 黑色外圈
+    if (blackDone) {
+      ctx.fillStyle = cmap.black;
+      ctx.beginPath(); ctx.arc(cx, cy, 105, 0, Math.PI*2); ctx.arc(cx, cy, 80, 0, Math.PI*2, true); ctx.fill();
+    }
+    // 红色花瓣（已填的）
+    for (const z of this.zones) {
+      if (z.correct !== 'red' || !z.filled) continue;
+      ctx.fillStyle = cmap.red;
+      ctx.beginPath(); ctx.arc(z.cx, z.cy, z.r-2, 0, Math.PI*2); ctx.fill();
+    }
+    // 黄色中心
+    if (centerZ && centerZ.filled) {
+      ctx.fillStyle = cmap.yellow;
+      ctx.beginPath(); ctx.arc(centerZ.cx, centerZ.cy, centerZ.r-2, 0, Math.PI*2); ctx.fill();
+    }
   },
 };
 // ==================== 关卡2：火把节跑酷 ====================
