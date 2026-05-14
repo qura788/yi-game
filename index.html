@@ -209,6 +209,11 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
       <div id="l3DialogueText"></div>
       <div style="text-align:center;margin-top:8px;font-size:12px;color:#8a7060">点击关闭</div>
     </div>
+    <div id="l3Knowledge" class="scroll-card" style="display:none;text-align:center">
+      <h2>🍽️ 彝族特色美食</h2>
+      <p id="l3KnowledgeText"></p>
+      <button class="btn gold" style="margin-top:16px" onclick="Level3.showComplete()">已了解</button>
+    </div>
     <div id="l3Complete" class="scroll-card" style="display:none;text-align:center">
       <h2>🎉 团圆宴圆满！</h2>
       <p>五位宾客都享用到了心仪的美食，<br>学到了宝贵的彝族文化知识。<br><br>🏆 解锁成就：<span style=\"color:#f0d060;font-weight:bold\">团圆主理人</span></p>
@@ -1175,6 +1180,8 @@ const Level3 = {
 
   init() {
     this.fed = {};
+    document.getElementById('l3Game').style.display = '';
+    document.getElementById('l3Knowledge').style.display = 'none';
     document.getElementById('l3Complete').style.display = 'none';
     document.getElementById('l3Dialogue').style.display = 'none';
     const table = document.getElementById('l3Table');
@@ -1299,7 +1306,32 @@ const Level3 = {
     this.showDialogue(npc);
     Game.achievements.feast = Object.keys(this.fed).length >= 5;
     if (Game.achievements.feast) { Audio.playFeastComplete();
-      setTimeout(() => { document.getElementById('l3Complete').style.display = ''; }, 3500);
+      document.getElementById("l3KnowledgeText").textContent = [
+        "彝族饮食以坨坨肉、荞麦制品和泡水酒为代表，",
+        "形成了独特的山地民族饮食文化。",
+        "",
+        "🥩 坨坨肉 — 彝家待客的最高礼节，",
+        "大块煮肉蘸盐巴，配以木姜子调味，",
+        "体现了彝族人民豪爽、真诚的待客之道。",
+        "",
+        "🫓 苦荞饼 / 荞粑 — 高寒山区的主要食粮，",
+        "苦荞耐寒耐贫瘠，被誉为「五谷之王」，",
+        "是彝家人世代相传的健康食品。",
+        "",
+        "🍶 泡水酒 — 彝族待客必备饮品，",
+        "以玉米或荞麦酿制，装入坛中插入竹管吸饮，",
+        "是彝年、火把节上不可或缺的滋味。",
+        "",
+        "🥬 酸菜 — 将青菜、白菜等晒干发酵，",
+        "存放于土陶罐或木桶，全年食用，",
+        "一碗酸菜汤，是彝家人最家常的温暖。",
+        "",
+        "这些美食传承的不仅是手艺，",
+        "更是彝族人民对土地与自然的敬畏。"
+      ].join("\n");
+      document.getElementById("l3Game").style.display = "none";
+      document.getElementById("l3Knowledge").style.display = "";
+      document.getElementById("l3Complete").style.display = "none";
     }
   },
 
@@ -1309,6 +1341,11 @@ const Level3 = {
     document.getElementById('l3Dialogue').style.display = 'block';
     clearTimeout(this._dialogueTimer);
     this._dialogueTimer = setTimeout(() => document.getElementById('l3Dialogue').style.display = 'none', 5000);
+  },
+
+  showComplete() {
+    document.getElementById("l3Knowledge").style.display = "none";
+    document.getElementById("l3Complete").style.display = "";
   },
 };
 document.getElementById('l3Dialogue').addEventListener('click', function(){ this.style.display = 'none'; });
