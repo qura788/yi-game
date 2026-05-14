@@ -1104,7 +1104,7 @@ const Level2 = {
     Game.achievements.torch = allLit;
     document.getElementById("l2CompleteTitle").textContent = allLit ? "\u2728 收集了 " + this.torchesLit + " 个火把！" : "比赛结束";
     document.getElementById("l2CompleteText").textContent = allLit
-      ? ["完整版《阿诗玛》民歌响起——","\u201C火把照亮阿诗玛的路\u201D","","村民们聚集在广场，主篝火熊熊燃起！","\u201C阿诗玛化为山石后，每年火把节","都有火光指引族人\u201D","","\u2764\uFE0F 剩余生命：" + this.lives].join("\n")
+      ? ["完整版《阿诗玛》民歌响起——","\u201C火把照亮阿诗玛的路\u201D","","村民们聚集在广场，主篝火熊熊燃起！","\u201C阿诗玛化为山石后，每年火把节","都有火光指引族人\u201D","","\u2764\uFE0F 剩余生命：" + this.lives,"","━━━━━━━━━━━━","📖 关于彝族火把节","","火把节是彝族最盛大的传统节日，","每年农历六月二十四举行，被称为东方的狂欢节。","","人们点燃火把绕行田间、村寨，","以火驱虫灭害、祈求丰收","同时举行赛马、斗牛、摔跤、歌舞等活动。","","在彝族文化中，火是光明与希望的象征，","驱散黑暗，带来温暖与勇气","凝聚着彝族人民对美好生活的向往——","每一束火把，都照亮回家的路。"].join("\n")
       : ["点燃了 "+this.torchesLit+"/"+this.torchTarget+" 个火把","跑了 "+Math.floor(this.distance)+"m","\u2764\uFE0F 剩余生命："+this.lives].join("\n");
     document.getElementById("l2NextBtn").style.display = allLit ? "" : "none";
     document.getElementById("l2RetryBtn").style.display = "";
