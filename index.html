@@ -39,8 +39,8 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
 #mainMenu{background:linear-gradient(180deg, #1a1410 0%, #2a1f15 40%, #1a1410 100%)}
 #mainMenu .btn{background:rgba(26,20,16,.65);border:2px solid #b8860b;color:#f0d8a0;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 #mainMenu .btn:active{background:rgba(42,31,21,.85);border-color:#d4a853}
-#mainMenu .title{font-size:34px;font-weight:bold;color:#fff;text-align:center;line-height:1.6;text-shadow:0 0 10px rgba(0,0,0,.9),0 2px 6px rgba(0,0,0,.7)}
-#mainMenu .subtitle{font-size:16px;color:#e8d080;margin-top:8px;text-align:center;text-shadow:0 0 8px rgba(0,0,0,.9),0 1px 4px rgba(0,0,0,.7);letter-spacing:2px}
+#mainMenu .title{font-size:34px;font-weight:bold;color:#f0d8a0;text-align:center;line-height:1.6;text-shadow:0 0 10px rgba(0,0,0,.9),0 2px 6px rgba(0,0,0,.7)}
+#mainMenu .subtitle{font-size:16px;color:#c8b080;margin-top:8px;text-align:center;text-shadow:0 0 8px rgba(0,0,0,.9),0 1px 4px rgba(0,0,0,.7);letter-spacing:2px}
 #mainMenu .decoration{font-size:48px;margin:20px 0;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
 .btn{background:linear-gradient(135deg, #8B6914, #6B4F10); color:#f0d8a0;border:none;padding:14px 48px;border-radius:50px; font-size:18px;font-weight:bold;cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,.5); transition:transform .15s,box-shadow .15s;font-family:inherit;}
@@ -94,9 +94,8 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
   <div class="scene active" id="mainMenu">
     <div class="title">铸牢中华民族共同体</div>
     <div class="subtitle">唤醒阿诗玛的祝福，学习彝族传统文化</div>
-    <div style="margin-top:32px;font-size:14px;color:#baa078;text-align:center;line-height:2;margin-bottom:20px;text-shadow:0 0 6px rgba(0,0,0,.7)">
-      <div style="margin-top:32px;font-size:14px;color:#ddd;text-align:center;line-height:2;margin-bottom:20px;text-shadow:0 0 8px rgba(0,0,0,.9),0 2px 4px rgba(0,0,0,.7)">让村寨的火把节与彝族年<br>真正「团圆」</div>
-    <button class="btn" onclick="Game.startIntro()" style="margin-top:16px">开始游戏</button>
+    <div style="margin-top:32px;font-size:14px;color:#baa078;text-align:center;line-height:2;margin-bottom:20px;text-shadow:0 0 8px rgba(0,0,0,.9),0 2px 4px rgba(0,0,0,.7)">让村寨的火把节与彝族年<br>真正「团圆」</div>
+    <button class="btn" onclick="Game.startIntro()">开始游戏</button>
     <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center">
       <button class="btn" style="padding:10px 20px;font-size:14px" onclick="Game.startLevel1()">第一关</button>
       <button class="btn" style="padding:10px 20px;font-size:14px" onclick="Game.startLevel2()">第二关</button>
