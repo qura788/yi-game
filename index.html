@@ -268,7 +268,13 @@ const ART = {
   lowFrameImg: 'art/dijia.png',
   // 关卡3 团圆宴
   tableBg: 'art/canzhuo.png',
-  foodImgs: {},         // 例: { tuotuorou:'art/meat.png', qiaoba:'art/cake.png', ... }
+  foodImgs: {
+    tuotuorou: 'art/tuotuo_rou.png',
+    kuba: 'art/kuqiao_bing.png',
+    qiaoba: 'art/qiaoba.png',
+    paoshuijiu: 'art/paoshuijiu.png',
+    suancai: 'art/suancai.png'
+  },
   npcImgs: {
     elder: 'art/elder.png',
     bimo: 'art/bimo.png',
@@ -1250,7 +1256,8 @@ const Level3 = {
       const el = document.createElement('div');
       el.className = 'food-item';
       el.style.cssText = 'left:'+f.x+'px;top:'+f.y+'px;width:'+foodW+'px;text-align:center;position:absolute;padding:8px 4px;font-size:clamp(12px,2vw,15px)';
-      el.innerHTML = '<span class="food-icon">' + f.icon + '</span>' + f.name; el.id = 'food_' + f.id;
+      let iconHtml = ART.foodImgs[f.id] ? '<img src="'+ART.foodImgs[f.id]+'" style="width:36px;height:36px;border-radius:8px;object-fit:cover;display:block;margin:0 auto">' : '<span class="food-icon">' + f.icon + '</span>';
+      el.innerHTML = iconHtml + '<span style="font-size:11px;margin-top:2px">' + f.name + '</span>'; el.id = 'food_' + f.id;
       el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); this.startDrag(e, f.id, el); });
       table.appendChild(el);
     }
