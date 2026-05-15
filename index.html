@@ -77,10 +77,10 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
 .food-item:active{cursor:grabbing;box-shadow:0 0 22px rgba(212,168,83,.6);transform:scale(1.06)}
 .food-item.matched{opacity:.3;pointer-events:none}
 .food-item .food-icon{font-size:22px;line-height:1}
-.npc-slot{position:absolute;border:3px dashed #d4a853;border-radius:50%; display:flex;flex-direction:column;align-items:center;justify-content:center; font-size:13px;color:#f5e6c8;text-align:center; background:rgba(26,20,16,.82);text-shadow:0 0 6px rgba(0,0,0,.85); transition:all .3s;animation:npcPulse 3s ease-in-out infinite;}
+.npc-slot{position:absolute;border:3px dashed #d4a853;border-radius:50%; display:flex;flex-direction:column;align-items:center;justify-content:center; font-size:13px;color:#f5e6c8;text-align:center; background-color:rgba(26,20,16,.82);text-shadow:0 0 6px rgba(0,0,0,.85); transition:all .3s;animation:npcPulse 3s ease-in-out infinite;}
 @keyframes npcPulse{0%,100%{border-color:#d4a853}50%{border-color:#f0d060}}
 .npc-slot .npc-role{font-size:10px;color:#b8a080;margin-top:1px}
-.npc-slot.hover{border-color:#ffdd88;background:rgba(212,168,83,.25);transform:scale(1.08);animation:none}
+.npc-slot.hover{border-color:#ffdd88;background-color:rgba(212,168,83,.25);transform:scale(1.08);animation:none}
 .npc-slot.fulfilled{border-color:#d4a853;animation:none}
 .dialogue-card{position:absolute;bottom:20px;left:20px;right:20px; background:linear-gradient(135deg, rgba(42,31,21,.98), rgba(30,20,12,.98)); border:2px solid #d4a853;border-radius:16px;padding:18px 20px; font-size:14px;line-height:1.9;z-index:10;display:none; box-shadow:0 8px 32px rgba(0,0,0,.6); animation:dialogueIn .3s ease-out;}
 @keyframes dialogueIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
@@ -269,7 +269,13 @@ const ART = {
   // 关卡3 团圆宴
   tableBg: 'art/canzhuo.png',
   foodImgs: {},         // 例: { tuotuorou:'art/meat.png', qiaoba:'art/cake.png', ... }
-  npcImgs: {},          // 例: { bimo:'art/bimo.png', elder:'art/elder.png', ... }
+  npcImgs: {
+    elder: 'art/elder.png',
+    bimo: 'art/bimo.png',
+    youth: 'art/youth.png',
+    child: 'art/child.png',
+    grandma: 'art/grandma.png'
+  },
   // 结尾
   endingBg: '',         // 例: 'art/ending-bg.jpg'
 };
@@ -1226,9 +1232,18 @@ const Level3 = {
     for (const n of this.npcs) {
       const el = document.createElement('div');
       el.className = 'npc-slot';
-      el.style.cssText = 'left:'+n.x+'px;top:'+n.y+'px;width:'+slotSize+'px;height:'+slotSize+'px;position:absolute';
-      el.id = 'npc_' + n.id; el.innerHTML = n.name + '<div class="npc-role">' + n.role + '</div>';
+      let bgStyle = '';
+      if (ART.npcImgs[n.id]) {
+        bgStyle = 'background-image:url('+ART.npcImgs[n.id]+');background-size:cover;background-position:center;';
+      }
+      el.style.cssText = 'left:'+n.x+'px;top:'+n.y+'px;width:'+slotSize+'px;height:'+slotSize+'px;position:absolute;'+bgStyle;
+      el.id = 'npc_' + n.id;
       table.appendChild(el);
+      // 名字标签放在圆框下方
+      const label = document.createElement('div');
+      label.style.cssText = 'position:absolute;left:'+n.x+'px;top:'+(n.y+slotSize+2)+'px;width:'+slotSize+'px;text-align:center;font-size:11px;color:#d4a853;pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,.8)';
+      label.innerHTML = n.name;
+      table.appendChild(label);
     }
     // Food items - 左侧
     for (const f of this.foods) {
@@ -1314,7 +1329,7 @@ const Level3 = {
     const foodEl = document.getElementById('food_' + foodId);
     if (foodEl) { foodEl.classList.add('matched'); foodEl.style.pointerEvents = 'none'; }
     const npcEl = document.getElementById('npc_' + npcId);
-    if (npcEl) { npcEl.classList.add('fulfilled'); npcEl.innerHTML = npc.name + '<div class=\"npc-role\">' + npc.role + '</div>'; }
+    if (npcEl) { npcEl.classList.add('fulfilled'); }
     this.showDialogue(npc);
     Game.achievements.feast = Object.keys(this.fed).length >= 5;
     if (Game.achievements.feast) { Audio.playFeastComplete();

@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(cat)",
+      "Bash(node _clean2.js)",
+      "Bash(rm _clean2.js)",
+      "Bash(node _clean3.js)",
+      "Bash(rm _clean3.js)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(node --check index.html)",
+      "Bash(node --check _check.js)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(rm -f _check.js)",
+      "Bash(node --check \"d:/Users/app/VS code/project/yi-game/_check.js\")",
+      "Bash(rm -f \"d:/Users/app/VS code/project/yi-game/_check.js\")",
+      "Bash(node --check \"d:/Users/app/VS code/project/yi-game/_chk.js\")",
+      "Bash(rm -f \"d:/Users/app/VS code/project/yi-game/_chk.js\")",
+      "Bash(node _scale_up.js)",
+      "Bash(rm _scale_up.js)",
+      "Bash(node _height_fix.js)",
+      "Bash(rm _height_fix.js)",
+      "Bash(node _fix_v2.js)",
+      "Bash(node _shield_fix.js)"
+    ]
+  }
+}
