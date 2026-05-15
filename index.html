@@ -282,10 +282,20 @@ const ART = {
     child: 'art/child.png',
     grandma: 'art/grandma.png'
   },
+  // 音效（放 .mp3/.wav 到 art/ 文件夹，填路径即可替换合成音效）
+  audioJump: '',        // 例: 'art/jump.mp3'
+  audioDuck: '',
+  audioTorch: '',
+  audioShield: '',
+  audioHit: '',
+  audioFoodMatch: '',
+  audioFeastComplete: '',
+  audioVictory: '',
+  audioClick: '',
   // 结尾
-  endingBg: '',         // 例: 'art/ending-bg.jpg'
+  endingBg: '',
 };
-// 如果图片未配置，将自动使用代码绘制的默认图形
+// 图片未配置则用代码绘制，音效未配置则用合成音效
 // ==================== 美术配置结束 ====================
 
 // ==================== 场景管理器 ====================
@@ -1605,6 +1615,7 @@ const Audio = {
   },
 
   playVictoryMusic() {
+    if (this.playFile(ART.audioVictory, 0.5)) return;
     this.stopMusic();
     this.init();
     var melody = [{f:392,d:0.12},{f:330,d:0.12},{f:392,d:0.12},{f:523,d:0.25},{f:659,d:0.25},{f:784,d:0.25},{f:1047,d:0.6}];
@@ -1617,22 +1628,49 @@ const Audio = {
     this.musicTimer = null;
   },
 
-  // ====== 音效 ======
-  playJump() { this.note(440, 0, 0.08, 0.08, 'square'); this.note(660, 0.04, 0.06, 0.06, 'square'); },
-  playDuck() { this.note(220, 0, 0.1, 0.06, 'triangle'); this.noise(0, 0.06, 0.03); },
-  playTorchLight() { this.note(880, 0, 0.1, 0.1, 'sine'); this.note(1320, 0.06, 0.08, 0.06, 'sine'); },
+  // ====== 通用：播放音频文件 ======
+  playFile(url, vol) {
+    if (!url) return false;
+    const a = new Audio(url);
+    a.volume = vol || 0.35;
+    a.play().catch(function(){});
+    return true;
+  },
+
+  // ====== 音效（有文件用文件，没文件用合成）=======
+  playJump() {
+    if (this.playFile(ART.audioJump)) return;
+    this.note(440, 0, 0.08, 0.08, 'square'); this.note(660, 0.04, 0.06, 0.06, 'square');
+  },
+  playDuck() {
+    if (this.playFile(ART.audioDuck)) return;
+    this.note(220, 0, 0.1, 0.06, 'triangle'); this.noise(0, 0.06, 0.03);
+  },
+  playTorchLight() {
+    if (this.playFile(ART.audioTorch)) return;
+    this.note(880, 0, 0.1, 0.1, 'sine'); this.note(1320, 0.06, 0.08, 0.06, 'sine');
+  },
   playShieldPickup() {
+    if (this.playFile(ART.audioShield)) return;
     [523, 659, 784, 1047].forEach((f, i) => this.note(f, i * 0.08, 0.15, 0.07, 'triangle'));
   },
   playHit() {
+    if (this.playFile(ART.audioHit)) return;
     this.noise(0, 0.15, 0.15);
     this.note(80, 0, 0.2, 0.12, 'sawtooth');
   },
-  playFoodMatch() { this.note(523, 0, 0.15, 0.08, 'sine'); this.note(659, 0.1, 0.12, 0.06, 'sine'); },
+  playFoodMatch() {
+    if (this.playFile(ART.audioFoodMatch)) return;
+    this.note(523, 0, 0.15, 0.08, 'sine'); this.note(659, 0.1, 0.12, 0.06, 'sine');
+  },
   playFeastComplete() {
+    if (this.playFile(ART.audioFeastComplete)) return;
     [523, 659, 784, 880, 1047].forEach((f, i) => this.note(f, i * 0.12, 0.2, 0.08, 'triangle'));
   },
-  playButtonClick() { this.note(660, 0, 0.05, 0.05, 'sine'); },
+  playButtonClick() {
+    if (this.playFile(ART.audioClick)) return;
+    this.note(660, 0, 0.05, 0.05, 'sine');
+  },
 };
 
 // 主菜单音乐自动启动 + 按钮音效
