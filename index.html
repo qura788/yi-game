@@ -77,8 +77,8 @@ body{background:#0d0b08; color:var(--text); font-family:"STSong","SimSun","Noto 
 .food-item:active{cursor:grabbing;box-shadow:0 0 22px rgba(212,168,83,.6);transform:scale(1.06)}
 .food-item.matched{opacity:.3;pointer-events:none}
 .food-item .food-icon{font-size:22px;line-height:1}
-.npc-slot{position:absolute;border:3px dashed #d4a853;border-radius:50%; display:flex;flex-direction:column;align-items:center;justify-content:center; font-size:13px;color:#f5e6c8;text-align:center; background-color:rgba(26,20,16,.82);text-shadow:0 0 6px rgba(0,0,0,.85); transition:all .3s;animation:npcPulse 3s ease-in-out infinite;}
-@keyframes npcPulse{0%,100%{border-color:#d4a853}50%{border-color:#f0d060}}
+.npc-slot{position:absolute;border:2px dashed rgba(180,140,70,.5);border-radius:50%; display:flex;flex-direction:column;align-items:center;justify-content:center; font-size:13px;color:#f5e6c8;text-align:center; background-color:rgba(26,20,16,.82);text-shadow:0 0 6px rgba(0,0,0,.85); transition:all .3s;}
+@keyframes npcPulse{0%,100%{border-color:rgba(180,140,70,.5)}50%{border-color:rgba(200,155,75,.65)}}
 .npc-slot .npc-role{font-size:10px;color:#b8a080;margin-top:1px}
 .npc-slot.hover{border-color:#ffdd88;background-color:rgba(212,168,83,.25);transform:scale(1.08);animation:none}
 .npc-slot.fulfilled{border-color:#d4a853;animation:none}
@@ -1247,7 +1247,7 @@ const Level3 = {
       table.appendChild(el);
       // 名字标签放在圆框下方
       const label = document.createElement('div');
-      label.style.cssText = 'position:absolute;left:'+n.x+'px;top:'+(n.y+slotSize+2)+'px;width:'+slotSize+'px;text-align:center;font-size:11px;color:#d4a853;pointer-events:none;text-shadow:0 0 4px rgba(0,0,0,.8)';
+      label.style.cssText = 'position:absolute;left:'+n.x+'px;top:'+(n.y+slotSize+2)+'px;width:'+slotSize+'px;text-align:center;font-size:12px;font-weight:bold;color:#f0d060;pointer-events:none;text-shadow:0 0 8px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,.95)';
       label.innerHTML = n.name;
       table.appendChild(label);
     }
